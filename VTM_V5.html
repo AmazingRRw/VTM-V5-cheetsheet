@@ -1,0 +1,2662 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wampir: Maskarada V5 - Kompletna Ściąga</title>
+    <style>
+	/* Zapewnia, że CAŁA zawartość jest widoczna przy drukowaniu/PDF */
+        @media print {
+            .content {
+                display: block !important;
+                page-break-before: auto;
+            }
+            .card.collapsed .card-content {
+                max-height: none !important;
+                opacity: 1 !important;
+                display: block !important;
+            }
+            .tabs, .subtitle, #toTopBtn, #searchBar, .collapse-icon, .icon-button {
+                display: none; /* Ukryj interfejs */
+            }
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth; /* Dla płynnego przewijania */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 50%, #1a0000 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff3333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #cc0000;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        #searchBar {
+            display: block;
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto 20px auto;
+            padding: 10px 15px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: 2px solid #660000;
+            background: rgba(0, 0, 0, 0.6);
+            color: #e0e0e0;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #searchBar:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(51, 0, 0, 0.6);
+            border: 2px solid #660000;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .tab:hover {
+            background: rgba(102, 0, 0, 0.8);
+            border-color: #cc0000;
+        }
+
+        .tab.active {
+            background: #660000;
+            border-color: #ff3333;
+            color: #ff3333;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #660000;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+            /* Dodane dla płynnego zwijania */
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: #cc0000;
+            box-shadow: 0 6px 20px rgba(255, 51, 51, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .card h2 {
+            color: #ff3333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #660000;
+            padding-bottom: 10px;
+        }
+        
+        /* Styl dla zwijanych nagłówków */
+        #disciplines .card h2, #clans .card h2 {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapse-icon {
+            color: #ff6666;
+            font-size: 0.8em;
+            transition: transform 0.3s;
+        }
+        .card.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+        /* Styl dla zwijanej zawartości */
+        .card-content {
+            transition: max-height 0.4s ease-out, opacity 0.3s;
+            max-height: 2000px; /* Wystarczająco duża */
+            opacity: 1;
+        }
+        .card.collapsed .card-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+
+        .card h3 {
+            color: #ff6666;
+            margin: 15px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .card li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #ff3333;
+            font-weight: bold;
+        }
+        
+        /* Linki wewnętrzne */
+        .card a, .glossary-term a, .card-content a {
+            color: #ff8888;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .card a:hover, .glossary-term a:hover, .card-content a:hover {
+            text-decoration: underline;
+            color: #ffaaaa;
+        }
+
+
+        .highlight {
+            background: rgba(255, 51, 51, 0.2);
+            padding: 15px;
+            border-left: 4px solid #ff3333;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .icon {
+            font-size: 1.3em;
+            margin-right: 5px;
+        }
+
+        .result-box {
+            background: rgba(102, 0, 0, 0.3);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #ff3333;
+        }
+
+        .clan-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .clan-icon {
+            font-size: 2em;
+        }
+
+        strong {
+            color: #ff6666;
+        }
+
+        .warning {
+            color: #ffaa00;
+        }
+
+        .hunger-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(102, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .hunger-dots {
+            color: #ff3333;
+            font-size: 1.2em;
+        }
+
+        .glossary-term {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #ff3333;
+            border-radius: 5px;
+            transition: background 0.5s, display 0.3s;
+        }
+
+        .glossary-term dt {
+            color: #ff6666;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .glossary-term dd {
+            margin-left: 0;
+            line-height: 1.6;
+        }
+
+        /* Przycisk "Do góry" */
+        #toTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            font-size: 18px;
+            border: none;
+            outline: none;
+            background-color: #ff3333;
+            color: white;
+            cursor: pointer;
+            padding: 12px 15px;
+            border-radius: 10px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        #toTopBtn:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+            
+            #searchBar {
+                width: 95%;
+            }
+        }
+        
+        
+    </style>
+    <script>
+        // Zmodyfikowana funkcja zakładek
+        function showTab(tabName, clickedTab) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const activeContent = document.getElementById(tabName);
+            if(activeContent) activeContent.classList.add('active');
+            
+            // Aktywuj odpowiedni przycisk zakładki
+            if (clickedTab) {
+                clickedTab.classList.add('active');
+            } else {
+                // Znajdź zakładkę po jej atrybucie onclick
+                const tabToActivate = [...tabs].find(tab => tab.getAttribute('onclick').includes(`'${tabName}'`));
+                if (tabToActivate) {
+                    tabToActivate.classList.add('active');
+                }
+            }
+        }
+
+        // Funkcja do linkowania wewnętrznego do Słowniczka
+        function goToGlossary(termId) {
+            showTab('glossary', document.querySelector('.tab[onclick*="glossary"]'));
+            
+            const element = document.getElementById(termId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.style.background = 'rgba(255, 100, 100, 0.3)';
+                setTimeout(() => {
+                    element.style.background = 'rgba(0, 0, 0, 0.4)'; 
+                }, 2500);
+            }
+        }
+        
+        // Funkcja do linkowania wewnętrznego do Dyscyplin
+        function goToDiscipline(disciplineId) {
+            showTab('disciplines', document.querySelector('.tab[onclick*="disciplines"]'));
+            
+            const element = document.getElementById(disciplineId);
+            if (element) {
+                // Rozwiń kartę, jeśli jest zwinięta
+                const card = element.closest('.card');
+                if (card && card.classList.contains('collapsed')) {
+                    card.querySelector('h2').click(); // Symuluje kliknięcie by rozwinąć
+                }
+
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                element.style.transition = 'background 0.3s';
+                element.style.background = 'rgba(255, 100, 100, 0.3)';
+                setTimeout(() => {
+                    element.style.background = 'rgba(0, 0, 0, 0.6)';
+                }, 2500);
+            }
+        }
+
+
+        // Funkcje przycisku "Do góry"
+        window.onscroll = function() { scrollFunction(); };
+
+        function scrollFunction() {
+            const toTopBtn = document.getElementById("toTopBtn");
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                toTopBtn.style.display = "block";
+            } else {
+                toTopBtn.style.display = "none";
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Funkcje zwijania i wyszukiwania po załadowaniu DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funkcjonalność zwijania kart
+            const collapsibleHeaders = document.querySelectorAll('#disciplines .card h2, #clans .card h2');
+            collapsibleHeaders.forEach(header => {
+                const icon = document.createElement('span');
+                icon.innerHTML = ' [-]';
+                icon.className = 'collapse-icon';
+                header.appendChild(icon);
+                
+                // Opakuj zawartość w div.card-content
+                const card = header.parentElement;
+                const contentElements = [];
+                let nextEl = header.nextElementSibling;
+                while(nextEl) {
+                    contentElements.push(nextEl);
+                    nextEl = nextEl.nextElementSibling;
+                }
+                const contentWrapper = document.createElement('div');
+                contentWrapper.className = 'card-content';
+                contentElements.forEach(el => contentWrapper.appendChild(el));
+                card.appendChild(contentWrapper);
+
+                header.addEventListener('click', () => {
+                    const isCollapsed = card.classList.toggle('collapsed');
+                    icon.innerHTML = isCollapsed ? ' [+]' : ' [-]';
+                    icon.style.transform = isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+                });
+            });
+
+            // Funkcjonalność paska wyszukiwania
+            const searchBar = document.getElementById('searchBar');
+            searchBar.addEventListener('keyup', () => {
+                const filter = searchBar.value.toLowerCase();
+                
+                if (filter.length > 0) {
+                    showTab('glossary', document.querySelector('.tab[onclick*="glossary"]'));
+                }
+
+                const terms = document.querySelectorAll('#glossary .glossary-term');
+                terms.forEach(term => {
+                    const dt = term.querySelector('dt');
+                    const dd = term.querySelector('dd');
+                    if (dt.textContent.toLowerCase().includes(filter) || dd.textContent.toLowerCase().includes(filter)) {
+                        term.style.display = '';
+                    } else {
+                        term.style.display = 'none';
+                    }
+                });
+            });
+
+            // Wyczyść wyszukiwarkę przy zmianie zakładki
+            document.querySelectorAll('.tabs .tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    if (!tab.getAttribute('onclick').includes('glossary')) {
+                        if(searchBar.value !== '') {
+                            searchBar.value = '';
+                            // Ręcznie zresetuj listę słowniczka
+                            document.querySelectorAll('#glossary .glossary-term').forEach(term => {
+                                term.style.display = '';
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>🦇 WAMPIR: MASKARADA V5 🦇</h1>
+        <p class="subtitle">Kompletna ściąga zasad, klanów i mechanik</p>
+        
+        <input type="text" id="searchBar" placeholder="Przeszukaj Słowniczek...">
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('basics', this)">Podstawy</div>  
+            <div class="tab" onclick="showTab('beast', this)">Bestia</div>
+            <div class="tab" onclick="showTab('hunger', this)">Głód</div>
+            <div class="tab" onclick="showTab('predator', this)">Typ Drapieżnika</div>
+            <div class="tab" onclick="showTab('combat', this)">Walka Fizyczna</div>
+            <div class="tab" onclick="showTab('conflicts', this)">Konflikty Społeczne</div>
+            <div class="tab" onclick="showTab('disciplines', this)">Dyscypliny</div>
+            <div class="tab" onclick="showTab('humanity', this)">Człowieczeństwo</div>
+            <div class="tab" onclick="showTab('masquerade', this)">Maskarada</div>
+            <div class="tab" onclick="showTab('bonds', this)">Więzi Krwi</div>
+            <div class="tab" onclick="showTab('coterie', this)">Koteria</div>
+            <div class="tab" onclick="showTab('clans', this)">Klany</div>
+            <div class="tab" onclick="showTab('advancement', this)">Rozwój</div>
+            <div class="tab" onclick="showTab('factions', this)">Frakcje</div> 
+            <div class="tab" onclick="showTab('merits', this)">Zalety i Wady</div>
+            <div class="tab" onclick="showTab('creation', this)">Tworzenie Postaci</div>
+            <div class="tab" onclick="showTab('glossary', this)">Słowniczek</div>        
+        </div>
+	
+
+        <div id="basics" class="content active">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">🎲</span>Rzut Kośćmi</h2>
+                    <ul>
+                        <li><strong>Kostka:</strong> K10 (0 = 10)</li>
+                        <li><strong>Pula:</strong> Atrybut + Umiejętność</li>
+                        <li><strong>Kości Głodu:</strong> Część puli to czerwone kości głodu</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">✅</span>Sukcesy</h2>
+                    <div class="result-box">
+                        <strong>6–9</strong> = 1 sukces
+                    </div>
+                    <div class="result-box">
+                        <strong>10</strong> = Krytyk (2 sukcesy)
+                    </div>
+                    <div class="result-box">
+                        <strong>Para 10</strong> = +2 dodatkowe sukcesy (łącznie 4)
+                    </div>
+                    <div class="result-box">
+                        <strong>1–5</strong> = Brak sukcesu
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🩸</span>Kości Głodu</h2>
+                    <div class="highlight">
+                        <strong class="warning">⚠️ Jedynka (1)</strong> przy porażce = <a href="javascript:void(0)" onclick="goToGlossary('gloss-bestial-failure')">Bestial Failure</a>
+                    </div>
+                    <div class="highlight">
+                        <strong class="warning">🔟 Dziesiątka (10)</strong> przy krytyku = <a href="javascript:void(0)" onclick="goToGlossary('gloss-messy-critical')">Messy Critical</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">📊</span>Trudności</h2>
+                    <ul>
+                        <li><strong>1–2:</strong> Łatwe zadanie</li>
+                        <li><strong>3–4:</strong> Standardowa trudność</li>
+                        <li><strong>5+:</strong> Trudne wyzwanie</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>Sukces</strong> = liczba sukcesów ≥ trudność
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🔄</span>Test Przebudzenia</h2>
+                    <p><em>(Rouse Check - używanie mocy wampirycznych)</em></p>
+                    <ul>
+                        <li>Rzuć 1 K10</li>
+                        <li><strong>6+</strong> = Bez zmian (Głód 0)</li>
+                        <li><strong>1–5</strong> = Głód +1 ⚠️</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">🧠</span>Siła Woli (Willpower)</h2>
+                    <p>Paliwo dla Twojej determinacji. Reprezentuje wytrwałość psychiczną.</p>
+                    <h3>Wydawanie Siły Woli:</h3>
+                    <ul>
+                        <li><strong>Przerzut kości:</strong> Wydaj 1 pkt, by przerzucić do 3 zwykłych kości (nie Głodu!).</li>
+                        <li><strong>Ignorowanie kar:</strong> Wydaj 1 pkt, by przez turę ignorować kary z obrażeń.</li>
+                        <li><strong>Oparcie się Szałowi:</strong> Możesz wydać 1 pkt, aby automatycznie opanować <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szał</a>.</li>
+                    </ul>
+                    <h3>Odzyskiwanie Siły Woli:</h3>
+                    <ul>
+                        <li>Odzyskujesz powierzchowne obrażenia Siły Woli na koniec sesji.</li>
+                        <li>Odzyskujesz 1 pkt, jeśli działałeś zgodnie ze swoim <strong>Pragnieniem</strong> (Desire).</li>
+                        <li>Odzyskujesz 1 pkt, jeśli poczyniłeś postępy w swojej <strong>Ambicji</strong> (Ambition).</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">❤️</span>Zdrowie (Health)</h2>
+                    <h3>Typy obrażeń:</h3>
+                    <ul>
+                        <li><strong>Powierzchowne (Superficial):</strong> Lekkie rany, uderzenia. Wampiry przyjmują połowę (zaokr. w dół) z większości źródeł.</li>
+                        <li><strong>Poważne (Aggravated):</strong> Ogień, słońce, kły, pazury, niektóre moce. Trudne do uleczenia.</li>
+                    </ul>
+                    <div class="highlight">
+                        Wypełnienie paska zdrowia Powierzchownymi = Osłabienie (-2 kości). Wypełnienie Poważnymi = <a href="javascript:void(0)" onclick="goToGlossary('gloss-torpor')">Torpor</a> lub Ostateczna Śmierć.
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">📝</span>Atrybuty i Umiejętności</h2>
+                    <h3>Atrybuty (Attributes):</h3>
+                    <ul>
+                        <li><strong>Fizyczne:</strong> Siła, Zręczność, Wytrzymałość</li>
+                        <li><strong>Społeczne:</strong> Charyzma, Manipulacja, Opanowanie</li>
+                        <li><strong>Mentalne:</strong> Inteligencja, Spryt, Determinacja</li>
+                    </ul>
+                    <h3>Umiejętności (Skills):</h3>
+                    <ul>
+                        <li><strong>Fizyczne:</strong> Atletyka, Bijatyka, Broń Palna, Broń Ręczna, Prowadzenie, Rzemiosło, Skradanie się, Przetrwanie, Złodziejstwo</li>
+                        <li><strong>Społeczne:</strong> Dowodzenie, Etykieta, Empatia, Zastraszanie, Perswazja, Uwodzenie, Występy, Zdolności Uliczne</li>
+                        <li><strong>Mentalne:</strong> Finanse, Medycyna, Nauki Ścisłe, Okultyzm, Obycie, Percepcja, Polityka, Technologia, Wiedza Akademicka</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="beast" class="content">
+            <div class="grid">
+                <div class="card" id="gloss-bestial-failure">
+                    <h2><span class="icon">⚠️</span>Bestial Failure</h2>
+                    <p><strong>Kiedy:</strong> Porażka rzutu + jedynka na kości głodu</p>
+                    
+                    <h3>Efekty narracyjne:</h3>
+                    <ul>
+                        <li>Utrata kontroli nad sobą</li>
+                        <li>Dramatyczny efekt bestialski</li>
+                        <li>Sytuacja staje się gorsza</li>
+                    </ul>
+
+                    <h3>Możliwe konsekwencje:</h3>
+                    <ul>
+                        <li>🔥 Atak <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szału</a> (Furia/Terror)</li>
+                        <li>👁️ Ujawnienie się przed ludźmi</li>
+                        <li>🎭 Złamanie <a href="javascript:void(0)" onclick="goToGlossary('gloss-masquerade')">Maskarady</a></li>
+                        <li>💔 Skrzywdzenie sojuszników</li>
+                        <li>Aktywacja <a href="javascript:void(0)" onclick="goToGlossary('gloss-compulsion')">Przymusu</a></li>
+                    </ul>
+                </div>
+
+                <div class="card" id="gloss-messy-critical">
+                    <h2><span class="icon">💥</span>Messy Critical</h2>
+                    <p><strong>Kiedy:</strong> Sukces krytyczny z dziesiątką na kości głodu</p>
+                    
+                    <div class="highlight">
+                        <strong>Osiągasz cel... ale brutalnie i niechcąco</strong>
+                    </div>
+
+                    <h3>Przykładowe efekty:</h3>
+                    <ul>
+                        <li>🩸 Za dużo krwi, zbyt wiele przemocy</li>
+                        <li>👹 Bestialski szał w oczach innych</li>
+                        <li>😱 Strach i chaos dookoła</li>
+                        <li>⚠️ Nadmierne, niepotrzebne okrucieństwo</li>
+                        <li>Aktywacja <a href="javascript:void(0)" onclick="goToGlossary('gloss-compulsion')">Przymusu</a></li>
+                    </ul>
+                </div>
+
+                <div class="card" id="gloss-frenzy">
+                    <h2><span class="icon">🔥</span>Szał (Frenzy)</h2>
+                    <p>Utrata kontroli na rzecz <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestii</a>.</p>
+                    <h3>Rodzaje szału:</h3>
+                    <ul>
+                        <li><strong>Furia (Gniew)</strong> - sprowokowany, atakujesz źródło frustracji</li>
+                        <li><strong>Terror (Strach)</strong> - sprowokowany ogniem lub słońcem, uciekasz w panice</li>
+                        <li><strong>Głód (Hunger)</strong> - sprowokowany zapachem krwi przy Głodzie 5</li>
+                    </ul>
+                    
+                    <h3>Jak uniknąć:</h3>
+                    <ul>
+                        <li>Rzuć Determinacja + Opanowanie</li>
+                        <li>Trudność zależy od sytuacji (zwykle 2-4)</li>
+                        <li>Możesz wydać 1 Siłę Woli, by automatycznie zdać</li>
+                    </ul>
+                </div>
+                
+                <div class="card" id="gloss-compulsion">
+                    <h2><span class="icon">🌀</span>Przymusy (Compulsions)</h2>
+                    <p>Krótkotrwałe, irracjonalne żądania Bestii, które chwilowo przejmują kontrolę nad twoim zachowaniem.</p>
+                    <h3>Kiedy się aktywują:</h3>
+                    <ul>
+                        <li>Po nieudanym Teście Przebudzenia (wynik 1)</li>
+                        <li>W chwilach dużego stresu (decyzja MG)</li>
+                        <li>Po <a href="javascript:void(0)" onclick="goToGlossary('gloss-bestial-failure')">Bestial Failure</a> lub <a href="javascript:void(0)" onclick="goToGlossary('gloss-messy-critical')">Messy Critical</a></li>
+                    </ul>
+                    <h3>Efekty:</h3>
+                    <ul>
+                        <li>Musisz odegrać Przymus przez jedną scenę (lub do jego zaspokojenia).</li>
+                        <li>Ignorowanie Przymusu kosztuje 1 pkt Siły Woli.</li>
+                        <li>Każdy klan ma swój unikalny Przymus (np. Brujah - bunt, Nosferatu - ukrywanie się).</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🐺</span>Złota Zasada Bestii</h2>
+                    <div class="highlight">
+                        <p style="font-size: 1.1em; line-height: 1.8;">
+                            <strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestia</a> zawsze płaci cenę</strong><br>
+                            Jeśli nie Ty, to świat wokół Ciebie
+                        </p>
+                    </div>
+                    
+                    <h3>Pamiętaj:</h3>
+                    <ul>
+                        <li>Mistrz Gry decyduje o konsekwencjach</li>
+                        <li>To część klimatu i horroru gry</li>
+                        <li>Bestia nie jest Twoim przyjacielem</li>
+                        <li>Każda moc ma swoją cenę</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="hunger" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">🩸</span>System Głodu</h2>
+                    <p>Głód reprezentuje twoją potrzebę krwi (0-5)</p>
+                    
+                    <div class="hunger-level">
+                        <span class="hunger-dots">○○○○○</span>
+                        <strong>Głód 0:</strong> Najedzony (rzadkie)
+                    </div>
+                    <div class="hunger-level">
+                        <span class="hunger-dots">●○○○○</span>
+                        <strong>Głód 1:</strong> Normalny stan
+                    </div>
+                    <div class="hunger-level">
+                        <span class="hunger-dots">●●○○○</span>
+                        <strong>Głód 2:</strong> Lekki głód
+                    </div>
+                    <div class="hunger-level">
+                        <span class="hunger-dots">●●●○○</span>
+                        <strong>Głód 3:</strong> Głodny
+                    </div>
+                    <div class="hunger-level">
+                        <span class="hunger-dots">●●●●○</span>
+                        <strong>Głód 4:</strong> Bardzo głodny (ryzyko Szału Głodu)
+                    </div>
+                    <div class="hunger-level">
+                        <span class="hunger-dots">●●●●●</span>
+                        <strong>Głód 5:</strong> Głód krytyczny! (Szał Głodu przy zapachu krwi)
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🍷</span>Karmienie się (Sating Hunger)</h2>
+                    <p>Zaspokajanie Głodu to kluczowy element gry. Ilość zaspokojonego Głodu zależy od ilości pobranej krwi i konsekwencji dla ofiary.</p>
+                    <h3>Poziomy karmienia (na ludziach):</h3>
+                    <ul>
+                        <li><strong>Zaspokojenie 1 Głodu:</strong> Ofiara czuje się osłabiona, ma zawroty głowy, ale szybko wraca do siebie.</li>
+                        <li><strong>Zaspokojenie 2 Głodu:</strong> Ofiara jest w stanie anemii, może wymagać hospitalizacji. Jest wyraźnie chora.</li>
+                        <li><strong>Zaspokojenie 3 Głodu:</strong> Ofiara jest obłożnie chora, na granicy śmierci. Wymaga natychmiastowej transfuzji.</li>
+                        <li><strong>Zaspokojenie 4 Głodu:</strong> Zabicie ofiary.</li>
+                        <li><strong>Zaspokojenie 5 Głodu:</strong> Zabicie ofiary i wyssanie jej do ostatniej kropli.</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>⚠️ Głód 4 lub 5:</strong> Nie możesz zmniejszyć Głodu poniżej 1 bez zabicia śmiertelnika (zaspokojenia co najmniej 4 Głodu).
+                    </div>
+                    <h3>Inne źródła krwi:</h3>
+                    <ul>
+                        <li><strong>Krew zwierzęca:</strong> Zaspokaja Głód, ale wymaga więcej krwi (np. 2-3 szczury = 1 Głód). Duże zwierzęta (niedźwiedź) mogą dać więcej.</li>
+                        <li><strong>Krew z torebki:</strong> Zaspokaja 1 Głodu na torebkę. Nigdy nie ma Rezonansu. Nie może zaspokoić Głodu poniżej 2.</li>
+                        <li><strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-vitae')">Vitae</a> (Krew wampira):</strong> Nigdy nie syci Głodu. Prowadzi do <a href="javascript:void(0)" onclick="goToGlossary('gloss-vinculum')">Więzi Krwi</a>.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎭</span>Rezonans Krwi</h2>
+                    <p>Emocje ofiary wpływają na smak i efekty krwi:</p>
+                    
+                    <h3>Rodzaje rezonansu:</h3>
+                    <ul>
+                        <li><strong>Choleryk (Gniew):</strong> Bonus do dyscyplin fizycznych (Potencja, Szybkość)</li>
+                        <li><strong>Melancholik (Smutek):</strong> Bonus do dyscyplin mentalnych (Auspex, Dominacja)</li>
+                        <li><strong>Flegmatyk (Spokój):</strong> Bonus do dyscyplin obronnych (Hart, Animalizm)</li>
+                        <li><strong>Sangwinik (Radość):</strong> Bonus do dyscyplin społecznych (Presencja, Zaciemnienie)</li>
+                    </ul>
+                    
+                    <div class="highlight">
+                        Intensywny rezonans może dać tymczasowe bonusy (Dyscrasia) lub pomóc w nauce dyscyplin.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">⚡</span>Używanie Krwi</h2>
+                    <h3>Blood Surge (Przypływ Krwi):</h3>
+                    <ul>
+                        <li>+X kości do puli Atrybutu (zależne od <a href="javascript:void(0)" onclick="goToGlossary('gloss-blood-potency')">Mocy Krwi</a>)</li>
+                        <li>Koszt: 1 Test Przebudzenia (Rouse Check)</li>
+                    </ul>
+
+                    <h3>Wyleczenie obrażeń:</h3>
+                    <ul>
+                        <li><strong>Powierzchowne:</strong> 1 Test Przebudzenia = wylecz wszystkie</li>
+                        <li><strong>Poważne:</strong> 1 Test Przebudzenia = wylecz 1 poziom</li>
+                    </ul>
+
+                    <h3>Inne użycia (1 Test Przebudzenia):</h3>
+                    <ul>
+                        <li>Aktywacja większości dyscyplin</li>
+                        <li>Udawanie człowieka (rumieniec, ciepło)</li>
+                        <li>Budzenie się w dzień</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="predator" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">🎯</span>Czym jest Typ Drapieżnika?</h2>
+                    <p>Typ Drapieżnika to domyślny sposób, w jaki Twój wampir poluje. To mechanika tworzenia postaci, która definiuje Twoje preferowane ofiary i metody.</p>
+                    <div class="highlight">
+                        Wybór Typu Drapieżnika daje bonusowe kropki w Dyscyplinach, Zaletach (Merits) lub Umiejętnościach, ale często dodaje też Wady (Flaws) lub wpływa na Człowieczeństwo.
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon"> </span>Typy Drapieżnika (Część 1)</h2>
+                    <h3>Osyl (Alleycat):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Polowanie na słabych i bezbronnych w ciemnych alejkach. Brutalna siła.</li>
+                        <li><strong>Bonusy:</strong> +1 Bijatyka, +1 Potencja LUB Szybkość</li>
+                        <li><strong>Wady:</strong> Wrogowie (Policja), Zła reputacja. -1 Skaza do Człowieczeństwa.</li>
+                    </ul>
+                    <h3>Kociak (Bagger):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Unikanie polowania. Picie z torebek krwi (szpitale, czarny rynek).</li>
+                        <li><strong>Bonusy:</strong> +1 Zasoby, +1 Zdolności Uliczne LUB Medycyna</li>
+                        <li><strong>Wady:</strong> Krew z torebki nigdy nie ma Rezonansu. Nie zaspokoi Głodu poniżej 2.</li>
+                    </ul>
+                    <h3>Za Zgodą (Consensualist):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Picie tylko za zgodą ofiary (np. partnerzy, kultyści krwi).</li>
+                        <li><strong>Bonusy:</strong> +1 Uwodzenie, +1 Presencja LUB Dominacja</li>
+                        <li><strong>Wady:</strong> Musisz uzyskać zgodę. Polowanie zajmuje więcej czasu. (Chroni Człowieczeństwo - usuwa 1 Skazę).</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon"> </span>Typy Drapieżnika (Część 2)</h2>
+                    <h3>Farmer:</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Picie tylko ze zwierząt.</li>
+                        <li><strong>Bonusy:</strong> +1 Animalizm, +1 Przetrwanie</li>
+                        <li><strong>Wady:</strong> Musisz wypić dwa razy więcej krwi zwierzęcej. Krew zwierzęca nigdy nie może zaspokoić Głodu poniżej 2 (chyba że masz Animalizm 5).</li>
+                    </ul>
+                    <h3>Syrena (Siren):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Uwodzi ofiary, pije podczas intymnych chwil.</li>
+                        <li><strong>Bonusy:</strong> +1 Uwodzenie, +1 Presencja</li>
+                        <li><strong>Wady:</strong> Możesz mieć problem z tworzeniem prawdziwych więzi. Ryzyko złamania Maskarady, jeśli ofiara zda sobie sprawę z sytuacji.</li>
+                    </ul>
+                     <h3>Worek Krwi (Blood Leech):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Pijesz krew innych wampirów (często kradzioną).</li>
+                        <li><strong>Bonusy:</strong> +1 Zdolności Uliczne, +1 Szybkość</li>
+                        <li><strong>Wady:</strong> Jesteś pogardzany. Ryzykujesz <a href="javascript:void(0)" onclick="goToGlossary('gloss-vinculum')">Więzią Krwi</a> i <a href="javascript:void(0)" onclick="goToGlossary('gloss-diablerie')">Diablerie</a>.</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon"> </span>Typy Drapieżnika (Część 3)</h2>
+                    <h3>Piaskun (Sandman):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Wkradasz się do domów i pijesz od śpiących ofiar.</li>
+                        <li><strong>Bonusy:</strong> +1 Medycyna, +1 Skradanie się</li>
+                        <li><strong>Wady:</strong> Włamanie i wejście jest ryzykowne. Wymaga +1 Skazy do Człowieczeństwa (naruszenie przestrzeni).</li>
+                    </ul>
+                    <h3>Królowa Sceny (Scene Queen):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Polujesz w ramach konkretnej subkultury (np. goci, punkowcy, finansiści), gdzie jesteś znany.</li>
+                        <li><strong>Bonusy:</strong> +1 Występy LUB Etykieta, +1 Zaleta (Status w subkulturze)</li>
+                        <li><strong>Wady:</strong> Ograniczone łowisko. Jeśli narobisz bałaganu, łatwo cię znaleźć.</li>
+                    </ul>
+                    <h3>Casanova:</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Polujesz na ofiary, z którymi masz romans (często wielu naraz).</li>
+                        <li><strong>Bonusy:</strong> +1 Uwodzenie, +1 Zasoby</li>
+                        <li><strong>Wady:</strong> Bardzo skomplikowane życie osobiste. Ryzyko zazdrości i komplikacji.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon"> </span>Typy Drapieżnika (Część 4)</h2>
+                    <h3>Rodzinka (Cleaver):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Ukrywasz swoją naturę i pijesz od swojej śmiertelnej rodziny lub bliskich.</li>
+                        <li><strong>Bonusy:</strong> +1 Empatia LUB Perswazja, +1 Zasoby (jako część rodziny)</li>
+                        <li><strong>Wady:</strong> Ogromne ryzyko dla Człowieczeństwa. Utrata Punktu Oparcia, jeśli zostaniesz odkryty. Wymaga +1 Skazy.</li>
+                    </ul>
+                    <h3>Ozyrys / Idol (Osiris):</h3>
+                    <ul>
+                        <li><strong>Metoda:</strong> Tworzysz kult lub grupę wyznawców, którzy "oddają" ci krew dobrowolnie.</li>
+                        <li><strong>Bonusy:</strong> +1 Dowodzenie, +2 Zaleta (Sława LUB Stado)</li>
+                        <li><strong>Wady:</strong> Utrzymanie kultu wymaga czasu i wysiłku. Bardzo duże ryzyko złamania Maskarady i uwagi Inkwizycji.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="combat" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">⚔️</span>Inicjatywa</h2>
+                    <ul>
+                        <li><strong>Spryt + Percepcja</strong> (lub Atletyka, jeśli chcesz działać pierwszy)</li>
+                        <li>Remis? Wyższa wartość Sprytu wygrywa</li>
+                        <li>Nadal remis? Jednoczesne akcje</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎯</span>Akcje Bojowe</h2>
+                    <h3>W turze możesz:</h3>
+                    <ul>
+                        <li><strong>Drobna Akcja:</strong> poruszenie się, wyciągnięcie broni, celowanie</li>
+                        <li><strong>Główna Akcja:</strong> atak, aktywacja mocy, sprint</li>
+                    </ul>
+
+                    <h3>Rodzaje ataków:</h3>
+                    <ul>
+                        <li><strong>Wręcz:</strong> Siła + Bijatyka</li>
+                        <li><strong>Broń ręczna:</strong> Siła + Broń Ręczna</li>
+                        <li><strong>Dystans:</strong> Zręczność + Broń Palna</li>
+                        <li><strong>Rzut:</strong> Zręczność + Atletyka</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🛡️</span>Obrona</h2>
+                    <p>Atak jest testem spornym (Atakujący vs Obrońca)</p>
+                    <ul>
+                        <li><strong>Unik:</strong> Zręczność + Atletyka</li>
+                        <li><strong>Blok/Parowanie:</strong> Siła + Bijatyka / Broń Ręczna</li>
+                    </ul>
+
+                    <div class="highlight">
+                        <strong>Margines Sukcesu = Sukcesy Atakującego - Sukcesy Obrońcy</strong><br>
+                        Ostateczne obrażenia to Margines + Modyfikator broni.
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">💥</span>Obliczanie Obrażeń</h2>
+                    <p>Obrażenia w walce to proces dwuetapowy:</p>
+                    <ol style="list-style: decimal; padding-left: 20px; margin-top: 10px;">
+                        <li style="margin-left: 20px; padding-left: 5;">
+                            <strong>Ustal Margines Sukcesu:</strong><br>
+                            (Sukcesy Atakującego) - (Sukcesy Obrońcy)
+                        </li>
+                        <li style="margin-left: 20px; padding-left: 5;">
+                            <strong>Dodaj Modyfikator Broni:</strong><br>
+                            Ostateczne Obrażenia = Margines + Modyfikator Obrażeń Broni
+                        </li>
+                    </ol>
+                    <div class="highlight">
+                        <h3>Przykładowe Modyfikatory Obrażeń:</h3>
+                        <ul>
+                            <li><strong>Pięści / Bijatyka:</strong> +0 (Powierzchowne)</li>
+                            <li><strong>Nóż:</strong> +1 (Powierzchowne)</li>
+                            <li><strong>Pałka:</strong> +2 (Powierzchowne)</li>
+                            <li><strong>Miecz / Topór:</strong> +3 (Powierzchowne)</li>
+                            <li><strong>Wampirze Kły (standardowe):</strong> +1 (<strong>Poważne</strong> przeciw śmiertelnym, ale +0 Powierzchowne w walce z wampirem)</li>
+                            <li><strong>Dzikie Bronie (Protean 2):</strong> +2 (<strong>Poważne</strong>)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">💔</span>Obrażenia</h2>
+                    <h3>Obrażenia Powierzchowne:</h3>
+                    <ul>
+                        <li>Kule, pałki, pięści.</li>
+                        <li>Wampiry dzielą otrzymane obrażenia przez 2 (zaokrąglając w dół).</li>
+                        <li>Łatwe do uleczenia (1 Test Przebudzenia = wszystkie).</li>
+                    </ul>
+
+                    <h3>Obrażenia Poważne (Aggravated):</h3>
+                    <ul>
+                        <li>Ogień, słońce, kły i pazury wampirów (np. z <a href="javascript:void(0)" onclick="goToDiscipline('disc-protean')">Protean</a>, zadawane innym wampirom), niektóre moce.</li>
+                        <li>Trudne do uleczenia (1 Test Przebudzenia = 1 poziom).</li>
+                        <li>Wypełnia pasek zdrowia od prawej.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">💀</span>Osłabienie & Śmierć</h2>
+                    <ul>
+                        <li><strong>Osłabienie (Impaired):</strong> Ostatnie 3 pola paska zdrowia wypełnione = -2 kości do wszystkich pul fizycznych.</li>
+                        <li><strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-torpor')">Torpor</a>:</strong> Cały pasek wypełniony Powierzchownymi obrażeniami. Wampir wpada w śpiączkę.</li>
+                        <li><strong>Ostateczna Śmierć:</strong> Cały pasek wypełniony Poważnymi obrażeniami.</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">🔥</span>Zagrożenia (Ogień, Słońce, Kołek)</h2>
+                    <h3>Ogień:</h3>
+                    <ul>
+                        <li>Powoduje <strong>Poważne obrażenia</strong> (1-3 na turę, zależnie od wielkości).</li>
+                        <li>Wymusza test na <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szał Terroru</a> (trudność 3+).</li>
+                    </ul>
+                    <h3>Słońce:</h3>
+                    <ul>
+                        <li>Powoduje <strong>Poważne obrażenia</strong> (2+ na turę).</li>
+                        <li>Obniża Moc Krwi wampira z każdą turą.</li>
+                        <li>Wymusza test na Szał Terroru.</li>
+                    </ul>
+                     <h3>Kołek w Serce:</h3>
+                    <ul>
+                        <li>Nie zabija, lecz <strong>paraliżuje</strong> wampira.</li>
+                        <li>W walce: wymaga testu Siła + Broń Ręczna vs Zręczność + Atletyka, z karą -3 kości dla atakującego.</li>
+                        <li>Paraliż trwa dopóki kołek nie zostanie usunięty.</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">🏃</span>Zasady Pościgów</h2>
+                    <p>Pościgi rozstrzygane są serią spornych testów.</p>
+                    <ul>
+                        <li><strong>Pula testu:</strong> (Wytrzymałość/Zręczność) + Atletyka LUB Prowadzenie (dla pojazdów).</li>
+                        <li>MG ustala dystans początkowy (np. 3 "strefy").</li>
+                        <li>Każdy wygrany test sporny zmniejsza lub zwiększa dystans o 1 strefę.</li>
+                        <li>Osiągnięcie dystansu 0 (dogonienie) lub 5 (ucieczka) kończy pościg.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎲</span>Modyfikatory Walki</h2>
+                    <ul>
+                        <li><strong>Osłona:</strong> +1 do +3 do puli obrony</li>
+                        <li><strong>Zaskoczenie:</strong> Obrońca nie wykonuje testu obrony</li>
+                        <li><strong>Celowanie:</strong> +1 kość do ataku dystansowego</li>
+                        <li><strong>Ciemność:</strong> -2 lub -3 kości do pul ataków</li>
+                        <li><strong>Walka w zwarciu (broń palna):</strong> Trudność ataku = Zręczność + Broń Palna przeciwnika</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div id="conflicts" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">💬</span>Mechanika Konfliktów</h2>
+                    <p>Konflikty społeczne to "walka" na argumenty, perswazję lub zastraszanie. Celem jest zredukowanie Siły Woli przeciwnika.</p>
+                    <div class="highlight">
+                        <strong>Pula Ataku:</strong> (Charyzma/Manipulacja) + (Perswazja/Zastraszanie/Uwodzenie/itp.)
+                        <br>
+                        <strong>Pula Obrony:</strong> (Determinacja/Opanowanie) + (Spryt/Empatia)
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">📉</span>Obrażenia Siły Woli</h2>
+                    <p>Wygrywając test sporny, zadajesz <strong>Powierzchowne Obrażenia Sile Woli</strong> przeciwnika.</p>
+                    <ul>
+                        <li><strong>Wynik =</strong> Sukcesy Atakującego - Sukcesy Obrońcy</li>
+                        <li>Obrażenia = Wynik testu</li>
+                        <li>Gdy Siła Woli spadnie do 0, postać jest "pokonana" społecznie.</li>
+                    </ul>
+                    <h3>Efekty "pokonania":</h3>
+                    <ul>
+                        <li>Musi się zgodzić na rozsądną prośbę.</li>
+                        <li>Ucieka ze sceny upokorzona.</li>
+                        <li>Podporządkowuje się (tymczasowo).</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎭</span>Pierwsze Wrażenie</h2>
+                    <p>Przed rozpoczęciem konfliktu, MG może zarządzić test na <strong>Pierwsze Wrażenie</strong>.</p>
+                    <ul>
+                        <li><strong>Pula:</strong> (Charyzma/Manipulacja) + (Etykieta/Występy/Zdolności Uliczne)</li>
+                        <li><strong>Trudność:</strong> Zależy od sytuacji (np. 3 dla neutralnego spotkania).</li>
+                    </ul>
+                    <h3>Efekty:</h3>
+                    <ul>
+                        <li><strong>Sukces:</strong> Zyskujesz przewagę, np. +1 lub +2 kości do pierwszej interakcji.</li>
+                        <li><strong>Porażka:</strong> Zaczynasz ze stratą, np. -1 kość.</li>
+                        <li><strong>Messy Critical / Bestial Failure:</strong> Może natychmiast zakończyć negocjacje katastrofą.</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">⚖️</span>Prestiż i Przysługi (Boons)</h2>
+                    <p>Przysługi (długi) to główna waluta polityczna w społeczeństwie <a href="javascript:void(0)" onclick="goToGlossary('gloss-camarilla')">Camarilli</a>.</p>
+                    <div class="highlight">
+                        Udzielenie pomocy lub darowanie życia tworzy <strong>"Dług" (Boon)</strong>, który można później "spłacić".
+                    </div>
+                    <h3>Poziomy Długów:</h3>
+                    <ul>
+                        <li><strong>Trywialny:</strong> Drobna pomoc, podwózka.</li>
+                        <li><strong>Mniejszy:</strong> Informacja, drobne wsparcie polityczne.</li>
+                        <li><strong>Większy:</strong> Ocalenie życia, duże wsparcie polityczne.</li>
+                        <li><strong>Dożywotni:</strong> Ocalenie przed Ostateczną Śmiercią, darowanie <a href="javascript:void(0)" onclick="goToGlossary('gloss-blood-hunt')">Blood Hunt</a>.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">💡</span>Porady Społeczne</h2>
+                    <ul>
+                        <li><strong>Dyscypliny:</strong> <a href="javascript:void(0)" onclick="goToDiscipline('disc-presence')">Presencja</a>, <a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')">Dominacja</a> i <a href="javascript:void(0)" onclick="goToDiscipline('disc-auspex')">Auspex</a> są kluczowe.</li>
+                        <li><strong>Siła Woli:</strong> Możesz wydać 1 pkt Siły Woli, by "zadać" 1 Powierzchowne obrażenie Sile Woli przeciwnika (przedstawiając mocny argument).</li>
+                        <li><strong>Odzyskiwanie:</strong> Powierzchowne obrażenia Siły Woli leczą się na koniec sceny lub sesji.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="disciplines" class="content">
+            <div class="grid">
+
+                <div class="card" id="disc-auspex">
+                    <h2><span class="icon">👁️</span>Auspex (Nadwrażliwość)</h2>
+                    <div class="card-content">
+                        <p><strong>Zwiększone zmysły i percepcja</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Wyostrzone Zmysły:</strong> (Pasywne) Dodaje kości równe poziomowi Auspex do testów Percepcji.</li>
+                            <li><strong>Wyczucie Niewidzialnego:</strong> Wyczuwanie istot nadprzyrodzonych, rezonansu krwi lub ukrytych mocy.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Przeczucie:</strong> Ostrzeżenie przed nadchodzącym niebezpieczeństwem (MG może dać wskazówkę lub bonus do obrony).</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Postrzeganie Aur:</strong> (Koszt 1: Sporny test Spryt + Auspex vs Opanowanie + Podstęp) Pozwala widzieć aurę celu, jego stan emocjonalny, rezonans i czy jest wampirem.</li>
+                            <li><strong>Współdzielenie Zmysłów:</strong> Możesz "przełączyć się" na zmysły zwierzęcia, które kontrolujesz.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Dotyk Ducha:</strong> Koszt 1: Odczytywanie silnych emocji lub wydarzeń, które przylgnęły do celu.</li>
+			   <li><strong>Obnażone Serce:</strong> Koszt 1: Poznaj najgłębsze obawy lub pragnienia celu.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Projekcja Astralna (Telepatia):</strong> Koszt 1: Możliwość wysyłania umysłu poza ciało, szpiegowania lub komunikowania się telepatycznie.</li>
+                            <li><strong>Jasnowidzenie:</strong> Koszt 1: Skupienie się na odległym miejscu lub osobie, by zobaczyć i usłyszeć co się tam dzieje.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-animalism">
+                    <h2><span class="icon">🐺</span>Animalizm (Zwierzęcość)</h2>
+                    <div class="card-content">
+                        <p><strong>Kontrola nad zwierzętami i własną Bestią</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Więź ze Sługą:</strong> Koszt 1: Stworzenie specjalnej więzi ze zwierzęciem (Ghoul zwierzęcy).</li>
+                            <li><strong>Dzikie Szepty:</strong> Możliwość komunikacji i wydawania prostych poleceń zwierzętom.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Zastraszenie Bestii:</strong> Koszt 1: Użyj swojej Bestii, by przestraszyć lub uspokoić zwierzę.</li>
+			   <li><strong>Zwierzęczy Posłaniec:</strong> Użyj zwierzęcia żeby wysłać komuś wiadomość.</li>
+
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Ukojenie Bestii:</strong> (Koszt 1: Test Charyzma + Animalizm) Możliwość uspokojenia Szału u innego wampira.</li>
+                            <li><strong>Zwierzęca Esencja:</strong> Krew zwierząt zaspokaja Głód tak, jakby była ludzka.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Poddanie Zwierzęcia:</strong> Koszt 1: Całkowita kontrola nad umysłem zwierzęcia, przejęcie jego ciała.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+			    <li><strong>Dominacja zwierząt:</strong> Koszt 2: Pozwala dowodzić stadami lub hordami zwierząt..</li>
+                            <li><strong>Dominacja nad Bestią:</strong> Koszt 1: Przenoszą swój strach lub szał wściekłości na znajdującą się w pobliżu ofiarę..</li>
+                        
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-celerity">
+                    <h2><span class="icon">⚡</span>Celerity (Szybkość)</h2>
+                    <div class="card-content">
+                        <p><strong>Nadludzka szybkość i refleks</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Koci Refleks:</strong> (Pasywne) Automatycznie zdanie testu balansu .</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Błyskawiczna Reakcja:</strong> (Koszt: 1 Test Przebudzenia) Wykonaj dodatkową drobną akcję w turze.</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Mignięcie:</strong> 
+(Pasywne) Podwaja prędkość biegu (Koszt: 1 Test Przebudzenia) Porusz się tak szybko, że wygląda to jakbyś się teleportował na krótki dystans.</li>
+                            <li><strong>Tysiąc cięć:</strong> Automatycznie Rozbrój śmiertlenika, zaatakowanie innego wampira tym będzie naruszeniem Maskarady.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong> Uderzenie znikąd :</strong> Koszt: 1Zniknij po czym pojaw się ponownie i zaatakuj cel z zaskoczenia.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Błyskawiczne Uderzenie:</strong> (Koszt: 2 Testy Przebudzenia) Wykonaj atak z prędkością światła .</li>
+                            <li><strong>Podział Czasu:</strong> (Koszt: 2 Testy Przebudzenia) Prędkość ruchów wampira zaczyna dorównywać szybkości jego nadprzyrodzonej percepcji, co pozwala mu błyskawicznie reagować na wydarzenia. Gracz może, w rozsądnych granicach, wyprzedzać opowieść Narratora.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-dominate">
+                    <h2><span class="icon">🧠</span>Dominate (Dominacja)</h2>
+                    <div class="card-content">
+                        <p><strong>Kontrola umysłu (wymaga kontaktu wzrokowego)</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Nakaz:</strong> Wydaj proste, jednowyrazowe polecenie (np. "Uciekaj!", "Upuść!").</li>
+                            <li><strong>Zauroczenie:</strong> Cel jest tak tobą oczarowany, że nie pamięta co się działo (ułatwia karmienie).</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Hipnoza:</strong> (Koszt 1: Test Charyzma + Dominacja vs Spryt + Opanowanie) Wydaj złożone polecenie (np. "Zapomnij, że mnie widziałeś").</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Zapominający Umysł:</strong> Koszt 1: Zmień lub usuń wspomnienia ofiary.</li>
+                            <li><strong>Podświadomy Rozkaz:</strong> Koszt 1: Zasadź w umyśle ofiary rozkaz, który aktywuje się pod wpływem określonego bodźca (np. "Gdy zobaczysz Księcia, wyjdziesz").</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Racjonalizacja:</strong> Koszt 1: Ofiara automatycznie racjonalizuje sobie polecenia, które jej wydałeś, wierząc, że sama tego chciała.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Ostateczny Dekret:</strong> Koszt 1 Skaza! : Wydaj rozkaz, któremu ofiara nie będzie mogła się oprzeć.</li>
+                            <li><strong>Wezwanie Lete:</strong> Koszt 1: Grupowa manipulacja, w której używający mierzy się z najsilniejszą osobą z grupy  .</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-fortitude">
+                    <h2><span class="icon">🛡️</span>Fortitude (Odporność)</h2>
+                    <div class="card-content">
+                        <p><strong>Nadludzka wytrzymałość i odporność</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Odporność:</strong> (Pasywne) Dodaje kości równe poziomowi Odporności do puli Zdrowia (jako dodatkowe pola).</li>
+                            <li><strong>Niezłomny Umysł:</strong> (Pasywne) Dodaje kości równe poziomowi Odporności do obrony przed Dominacją i Presencją.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Twardość:</strong> (Koszt: 1 Test Przebudzenia) Zredukuj wszystkie Powierzchowne obrażenia do 1 (przez jedną scenę).</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Przeciwstawienie się Przekleństwu:</strong> Koszt 1: Otrzymujesz odporność na ogień (redukuje Poważne obrażenia o poziom Odporności).</li>
+                            <li><strong>Hart Ducha:</strong> Koszt: 2 Skazy! Odporność na ból i tortury psychiczne.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Dzielenie Bólu:</strong> Możesz przenieść otrzymane obrażenia na kogoś, kogo trzymasz.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Ciało z Marmuru:</strong> (Koszt: 2 Test Przebudzenia) Ignoruj wszystkie kary z obrażeń Chyba że to słońce przez jedną scenę.</li>
+                            <li><strong>Napój wytrzymałości:</strong> (Koszt: 1 Test Przebudzenia + Każdy pijący musi przejść test picia) Krew wampira nasyca się mocą Odporności, zapewniając jej część każdemu, kto jej skosztuje daje połowę punktów odporności dawcy zaokrąglając w dół.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-obfuscate">
+                    <h2><span class="icon">👻</span>Obfuscate (Niewidoczność)</h2>
+                    <div class="card-content">
+                        <p><strong>Niewidzialność i iluzje (umysły ignorują Twoją obecność)</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Płaszcz Cieni:</strong> Ukryj się w cieniu; dopóki się nie ruszasz, jesteś niewykrywalny.</li>
+                            <li><strong>Cisza Śmierci:</strong> (Pasywne) Użytkownik mocy tłumi odgłos swoich kroków, szelestów
+ubrania, pomniejszych kolizji z przedmiotami i wszystkieinne wydawane przez siebiedźwięki.  Wampir staje się w tensposób niewykrywalny, jeśli obserwator może go wyłącznie usłyszeć.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Niewidzialny Przejazd:</strong> Jesteś niewidzialny dopóki się poruszasz powoli (np. skradasz). Nagły ruch łamie iluzję.</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Maska Tysiąca Twarzy:</strong> (Koszt: 1 Test Przebudzenia) Stwórz iluzoryczny wygląd (inna twarz, ubranie).</li>
+                            <li><strong>Niewidzialna Obecność:</strong> Możesz poruszać się normalnie, będąc niewidzialnym (ale nie biegać lub walczyć).</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Zniknięcie:</strong> (Koszt: 1 Test Przebudzenia) Zniknij komuś na oczach, nawet w środku walki.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Mentalna Osłona:</strong> Ukryj swoją aurę i myśli przed Auspexem.</li>
+                            <li><strong>Niewidzialny Korytarz:</strong> Uczyń grupę osób niewidzialną (razem z tobą).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-potence">
+                    <h2><span class="icon">💪</span>Potence (Potencja)</h2>
+                    <div class="card-content">
+                        <p><strong>Nadludzka siła</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Potężny Skok:</strong> (Pasywne) Skacz na niewiarygodne odległości (pionowo i poziomo).</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Waleczność:</strong> (Pasywne) Dodaj bonus (+ poziom Potencji) do obrażeń w walce wręcz (Bijatyka, Broń Ręczna).</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Brutalne Karmienie:</strong> (Koszt: 1 Test Przebudzenia) Zaspokój 1 poziom Głodu w kilka sekund, zamiast minut.</li>
+                            <li><strong>Nieludzka Siła:</strong> (Koszt: 1 Test Przebudzenia) Bonus przeciwko testowi siły.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Iskra Szału:</strong> Uderz kogoś tak mocno, że musi wykonać test na Szał Furii.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Wstrząs Ziemi:</strong> (Koszt: 2 Testy Przebudzenia) Uderz w ziemię, powalając wszystkich w pobliżu.</li>
+                            <li><strong>Pięść Kaina:</strong> (Koszt: 1 Test Przebudzenia) Wampir może gołymi rękami zadawać śmiertelne obrażenia zarówno ludziom, jak i Spokrewnionym. Może rozerwać kogoś na strzępy, przebić na wylot jego ciało, urwać mu głowę lub wyrwać z piersi serce.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-presence">
+                    <h2><span class="icon">✨</span>Presence (Prezencja)</h2>
+                    <div class="card-content">
+                        <p><strong>Charyzma i manipulacja emocjami (działa na wszystkich w pobliżu)</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Podziw:</strong> (Pasywne) Ludzie naturalnie cię lubią i podziwiają (bonus do testów społecznych).</li>
+                            <li><strong>Zachwyt:</strong> Utrzymuj kontakt wzrokowy, by zahipnotyzować cel.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Długi Pocałunek:</strong> Zwykły wampiryczny Pocałunek wywołuje u śmiertelników stan zbliżony do ekstazy, ale ta moc wykracza daleko ponad to. Ofiary, na których wampir żeruje, uzależniają się od Pocałunku, mają na jego punkcie obsesję, a nawet szukają Spokrewnionego, żeby na nich ponownie żerował.</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Przerażenie:</strong> (Koszt: 1 Test Przebudzenia) Wywołaj falę strachu. Śmiertelnicy uciekają w panice, wampiry muszą testować Szał Terroru.</li>
+                            <li><strong>Zauroczenie:</strong> Cel staje się twoim oddanym fanem, chce ci służyć i być blisko ciebie.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Wezwanie:</strong> (Koszt: 1 Test Przebudzenia) Wezwij mentalnie kogoś, kto cię zna. Osoba ta zrobi wszystko, by do ciebie dotrzeć.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Majestat:</strong> (Koszt: 2 Testy Przebudzenia) Wyglądasz jak bóg. Nikt nie może ci się aktywnie sprzeciwić ani zaatakować (chyba że zaatakujesz pierwszy).</li>
+                            <li><strong>Magnetyzm Gwiazdy:</strong> Koszt: 1 Moce Prezencji wampira działają teraz na ludzi także przez elektroniczne transmisje przeprowadzane na żywo. Nagrania lub pozostawione wiadomości nie mają tego efektu.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-protean">
+                    <h2><span class="icon">🦎</span>Protean (Transformacja)</h2>
+                    <div class="card-content">
+                        <p><strong>Zmiana kształtu i bestialska adaptacja</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Oczy Bestii:</strong> Wampir może nadać swoim oczom nadprzyrodzony czerwony blask. Dzięki temu widzi nawet w całkowitej ciemności.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Pierwotna Broń:</strong> (Koszt: 1 Test Przebudzenia) Wampir może powiększyć swoje naturalne bronie do monstrualnych rozmiarów. Zwykle chodzi tu o przekształcenie paznokci w pazury, choć można również przemienić kły w istne sztylety, niczym u gigantycznego węża.</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Przemiana:</strong> (Koszt: 1 Test Przebudzenia) ZWampir może przyjąć postać zwierzęcia o podobnych rozmiarach, co on sam. W ten sposób może zmienić się tylko w jeden rodzaj zwierzęcia (najczęściej jest to wilk, czasami wielki kot lub gigantyczny wąż).</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Metamorfoza:</strong> (Pasywne) Ta moc również pozwala wampirowi przekształcić się w zwierzę, lecz zmienia jego rozmiar. Używając Metamorfozy, Spokrewnieni najczęściej przemieniają się w nietoperze, szczury.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Forma Mgły:</strong> (Koszt: 2 Testy Przebudzenia) Wampir nabywa legendarną moc przemiany w mgłę – widzialną, lecz niemożliwą do zranienia czymkolwiek innym niż ogniem, światłem słonecznym lub za pomocą nadprzyrodzonych metod. Można w ten sposób prześlizgnąć się przez rury, szczeliny i szpary..</li>
+                            <li><strong>Swobodne serce :</strong> (Koszt: 2 Testy Przebudzenia) Serce, siedziba vitae i nieżycia wampira, odłącza się od arterii i porusza swobodnie, chociaż powoli, po całej klatce piersiowej. Dzięki temu jest niezwykle trudno przebić je kołkiem.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-blood-sorcery">
+                    <h2><span class="icon">🔮</span>Blood Sorcery (Magia Krwi)</h2>
+                    <div class="card-content">
+                        <p><strong>Czary krwi i rytuały (Klan Tremere)</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Żrąca Krew:</strong> (Koszt: 1 Test Przebudzenia) Poprzez zmianę właściwości części swojej Krwi, Spokrewniony może sprawić, że stanie się ona mocno korozyjna dla materiałów nieożywionych, redukując je do postaci szlamu.</li>
+                            <li><strong>Smak Krwi:</strong> Poznaj informacje o kimś (czy jest wampirem, jego Głód, ostatni posiłek) pijąc jego krew.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Zagaszona Krew:</strong> Spokrewniony może pozbawić Krew innego wampira jej zdolności do podtrzymywania nieżycia i spotęgować w ten sposób uczucie Głodu.</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Dotyk Skorpiona:</strong> (Koszt: 1 Test Przebudzenia) Wampir może przekształcić część swojej Krwi w paraliżującą truciznę, która działa zarówno na śmiertelników, jak i na wampiry. Może następnie użyć owego ichoru, smarując ostrze broni lub plując nim w kierunku ofiary. Trująca Krew obezwładnia śmiertelników, natomiast wampirom przeszkadza, choć niekoniecznie je zatrzymuje.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Kradzież Vitae:</strong> (Wampir w nadprzyrodzony sposób otwiera główną tętnicę śmiertelnika, a krew tryska z niej wprost do jego otwartych ust. Dodatkowy efekt tej mocy polega na tym, że śmiertelnik zostaje ujarzmiony niczym w przypadku Pocałunku, a rana sama się zasklepia, niezależnie od tego czy ofiara przeżyje, czy umrze.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Kocioł Krwi:</strong> Koszt 1 i 1 Skazy: Ta makabryczna moc pozwala wampirowi zagotować krew ofiary w jej własnych żyłach, co powoduje u niej rozległe obrażenia wewnętrzne i przeraźliwy ból. Być może istnieją bardziej skuteczne metody zabijania, ale niewiele z nich jest aż tak okrutnych.</li>
+                        </ul>
+                        <div class="highlight">
+                            <strong>Rytuały:</strong> Ta dyscyplina daje też dostęp do Rytuałów (osobnych mocy), które trzeba kupować i uczyć się osobno (np. Ochrona Schronienia, Krwawy Spacer).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-oblivion">
+                    <h2><span class="icon">🌊</span>Oblivion (Zapomnienie)</h2>
+                    <div class="card-content">
+                        <p><strong>Kontrola cieni i nekromancja (Lasombra i Hecata)</strong></p>
+                        <h3>Poziom 1</h3>
+                        <ul>
+                            <li><strong>Popioły do Popiołów:</strong> Zniszcz ciało umarłego obróć je w popiół.</li>
+                            <li><strong>Zapomniany Widok:</strong> Widzisz w ciemności i widzisz duchy.</li>
+                        </ul>
+                        <h3>Poziom 2</h3>
+                        <ul>
+                            <li><strong>Fatalne przeczucie:</strong> (Koszt: 1 Test Przebudzenia) Wizja śmierci śmiertelników musi widzieć lub słyszeć ofiarę .</li>
+                        </ul>
+                        <h3>Poziom 3</h3>
+                        <ul>
+                            <li><strong>Sługa Cieni:</strong> Pozwala wykorzystać Cień do szpiegowania.</li>
+                        </ul>
+                        <h3>Poziom 4</h3>
+                        <ul>
+                            <li><strong>Nekrotyczna Plaga:</strong> (Koszt: 1 Test Przebudzenia) Wampir może jednym dotykiem zatruć krew śmiertelnika, używając czystego zanieczyszczenia Otchłani. Ta straszliwa choroba niszczy jego ciało i może być zaraźliwa.</li>
+                        </ul>
+                        <h3>Poziom 5</h3>
+                        <ul>
+                            <li><strong>Wiednący Duch:</strong> (Koszt: 1 Test Przebudzenia) Wampir pokrywa obie dłonie vitae i dotyka ofiary. Kierując się surową entropią, rozkłada ducha, powodując poważne obrażenia i potencjalnie uniemożliwiając powrót ofiary jako widmo.</li>
+                            <li><strong>Krok w Otchłań:</strong> (Koszt: 1 Test Przebudzenia) Wejdź w jeden cień i wyjdź z innego w dowolnym miejscu.</li>
+                        </ul>
+                        <div class="highlight">
+                            <strong>Ceremonie:</strong> Podobnie jak Magia Krwi, ta dyscyplina daje dostęp do Ceremonii (Rytuałów Nekromancji).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="disc-thin-blood-alchemy">
+                    <h2><span class="icon">🗡️</span>Alchemia Cienkich Krwi</h2>
+                    <div class="card-content">
+                        <p><strong>Destylaty i formuły (tylko Cienkokrwiści)</strong></p>
+                        <p>Ta dyscyplina działa inaczej. Nie ma standardowych poziomów mocy. Zamiast tego:</p>
+                        <ul>
+                            <li>Poziomy 1-5 w Alchemii określają, jak <strong>złożone formuły</strong> potrafisz tworzyć i jak długo działają.</li>
+                            <li>Uczysz się poszczególnych "Formuł" (przepisów).</li>
+                            <li><strong>Poziom 1 (Przykłady):</strong> Tworzenie formuły wymaga 1 Testu Przebudzenia. (Np. "Haze" - tymczasowy Płaszcz Cieni).</li>
+                            <li><strong>Poziom 3 (Przykłady):</strong> Tworzenie formuły wymaga 2 Testów Przebudzenia. (Np. "Defy the Sun" - tymczasowa odporność na słońce).</li>
+                            <li><strong>Poziom 5 (Przykłady):</strong> Tworzenie formuły wymaga 3 Testów Przebudzenia. (Np. "Airborne" - tymczasowa Forma Mgły).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="humanity" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">💖</span>Człowieczeństwo (Humanity)</h2>
+                    <p>Miara twojego człowieczeństwa i odległości od <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestii</a> (0-10)</p>
+                    
+                    <div class="highlight">
+                        <strong>Im niższe Człowieczeństwo, tym:</strong><br>
+                        • Łatwiej o <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szał</a><br>
+                        • Trudniej udawać człowieka (kary do testów społecznych)<br>
+                        • Bliżej jesteś do Bestii
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">⚖️</span>Przekonania i Zasady</h2>
+                    <h3>Przekonania (Convictions):</h3>
+                    <p>3 zasady moralne, które definiują twojego wampira</p>
+                    
+                    <h3>Przykłady:</h3>
+                    <ul>
+                        <li>"Nigdy nie skrzywdzę niewinnych"</li>
+                        <li>"Chronię swoją rodzinę za wszelką cenę"</li>
+                        <li>"Moja wolność jest najważniejsza"</li>
+                    </ul>
+
+                    <div class="highlight">
+                        Złamanie Przekonania = otrzymujesz <a href="javascript:void(0)" onclick="goToGlossary('gloss-stain')">Skazę</a> (Stain)
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🌑</span>Skazy i Degeneracja</h2>
+                    <h3>Skazy (Stains):</h3>
+                    <p>Otrzymujesz <a href="javascript:void(0)" onclick="goToGlossary('gloss-stain')">Skazę</a> gdy:</p>
+                    <ul>
+                        <li>Złamiesz swoje Przekonanie</li>
+                        <li>Popełnisz czyn nieludzki (np. morderstwo z zimną krwią)</li>
+                        <li>Zabijesz w Szale</li>
+                    </ul>
+
+                    <h3>Rzut Sumienia (Remorse Roll):</h3>
+                    <p>Pod koniec sesji, jeśli masz 1 lub więcej Skaz (Stains), musisz wykonać Rzut Sumienia:</p>
+                    <ul>
+                        <li>Rzuć pulą kości równą <strong>(10 - Człowieczeństwo)</strong>.</li>
+                        <li>Każdy sukces (6+) usuwa 1 Skazę.</li>
+                        <li><strong>Jeśli po rzucie nadal masz jakiekolwiek Skazy</strong>, tracisz 1 permanentny punkt Człowieczeństwa.</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">📉</span>Mechaniczne Efekty Człowieczeństwa</h2>
+                    <p>Utrata Człowieczeństwa ma bezpośrednie, negatywne skutki:</p>
+                    <ul>
+                        <li><strong>Poziom 8-10:</strong> Pełna kontrola.</li>
+                        <li><strong>Poziom 7:</strong> (Standard startowy) Drobne bestialskie irytacje.</li>
+                        <li><strong>Poziom 6:</strong> Trudność (+1) do Rzutów Sumienia.</li>
+                        <li><strong>Poziom 5:</strong> Trudność (+1) do testów oporu przeciw Szałowi.</li>
+                        <li><strong>Poziom 4:</strong> Kara (-2 kości) do rzutów społecznych z ludźmi (Manipulacja, Charyzma).</li>
+                        <li><strong>Poziom 3:</strong> Trudność (+2) do Rzutów Sumienia. Trudność (+1) do oporu przeciw <a href="javascript:void(0)" onclick="goToGlossary('gloss-compulsion')">Przymusom</a>.</li>
+                        <li><strong>Poziom 2:</strong> Trudność (+2) do Szału. Dalsze kary społeczne.</li>
+                        <li><strong>Poziom 1:</strong> Bestia jest tuż pod powierzchnią. Bardzo trudno funkcjonować.</li>
+                        <li><strong>Poziom 0:</strong> Stajesz się <a href="javascript:void(0)" onclick="goToGlossary('gloss-wight')">Upiorną</a>. Postać staje się NPC.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🔗</span>Punkty Oparcia (Touchstones)</h2>
+                    <p>Ludzie lub miejsca łączące cię z człowieczeństwem</p>
+                    
+                    <ul>
+                        <li>Każde Przekonanie powinno mieć Punkt Oparcia</li>
+                        <li>Kontakt z Punktem Oparcia może pomóc w usunięciu Skaz</li>
+                        <li>Utrata Punktu Oparcia = ryzyko utraty Człowieczeństwa</li>
+                    </ul>
+
+                    <div class="highlight">
+                        <strong>Przykłady:</strong> Córka z poprzedniego życia, ulubiona kawiarnia, stare dzieło sztuki
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🦇</span>Niskie Człowieczeństwo</h2>
+                    <h3>Człowieczeństwo 3-4:</h3>
+                    <ul>
+                        <li>Trudności z empatią</li>
+                        <li>Częste <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szały</a></li>
+                        <li>Ludzie czują się nieswojo</li>
+                    </ul>
+
+                    <h3>Człowieczeństwo 1-2:</h3>
+                    <ul>
+                        <li>Prawie całkowicie <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestia</a></li>
+                        <li>Nieodróżnialny od potwora</li>
+                        <li>Ryzyko stania się <a href="javascript:void(0)" onclick="goToGlossary('gloss-wight')">Upiorną</a></li>
+                    </ul>
+
+                    <h3>Człowieczeństwo 0:</h3>
+                    <div class="highlight">
+                        <strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-wight')">Upiorna (Wight)</a></strong> - całkowicie opanowany przez Bestię, postać gracza staje się NPC
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">📜</span>Hierarchia Grzechów (Przykłady)</h2>
+                    <ul>
+                        <li><strong>Poziom 7:</strong> Kradzież, drobne oszustwo</li>
+                        <li><strong>Poziom 6:</strong> Przypadkowe zranienie śmiertelnika</li>
+                        <li><strong>Poziom 5:</strong> Nieumyślne zabójstwo</li>
+                        <li><strong>Poziom 4:</strong> Świadome zabójstwo (np. karmienie do śmierci)</li>
+                        <li><strong>Poziom 3:</strong> Tortury, seryjne morderstwa</li>
+                        <li><strong>Poziom 1-2:</strong> Akty bezsensownej deprawacji</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="masquerade" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">🎭</span>Czym jest <a href="javascript:void(0)" onclick="goToGlossary('gloss-masquerade')">Maskarada</a>?</h2>
+                    <div class="highlight">
+                        <p><strong>Pierwsza Tradycja Camarilli:</strong> Nie ujawniaj swojej natury śmiertelnym.</p>
+                    </div>
+                    <p>Złamanie Maskarady jest najcięższą zbrodnią w społeczeństwie wampirów. Może skutkować <a href="javascript:void(0)" onclick="goToGlossary('gloss-blood-hunt')">Blood Hunt</a> (polowaniem na ciebie).</p>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">⚠️</span>Co łamie Maskaradę?</h2>
+                    <h3>Oczywiste naruszenia:</h3>
+                    <ul>
+                        <li>Picie krwi publicznie</li>
+                        <li>Używanie oczywistych mocy przy świadkach</li>
+                        <li>Demonstracja nieśmiertelności</li>
+                        <li>Pozostawianie ciał z dwiema dziurkami</li>
+                    </ul>
+
+                    <h3>Subtelne naruszenia:</h3>
+                    <ul>
+                        <li>Zbyt wiele "wypadków" w okolicy</li>
+                        <li>Wzorce zaginięć</li>
+                        <li>Pojawienie się na starych zdjęciach bez starzenia się</li>
+                    </ul>
+                </div>
+                
+                <div class="card" id="gloss-traditions">
+                    <h2><span class="icon">📜</span>Sześć Tradycji</h2>
+                    <p>Fundamentalne prawa <a href="javascript:void(0)" onclick="goToGlossary('gloss-camarilla')">Camarilli</a>:</p>
+                    <ul>
+                        <li><strong>Pierwsza: Maskarada</strong><br>Nie ujawnisz swej prawdziwej natury tym, którzy nie są twej krwi.</li>
+                        <li><strong>Druga: Terytorium (Domain)</strong><br>Twoje terytorium jest twoją wyłączną własnością. Wszyscy inni muszą szanować twoje prawa.</li>
+                        <li><strong>Trzecia: Potomstwo (Progeny)</strong><br>Możesz <a href="javascript:void(0)" onclick="goToGlossary('gloss-embrace')">Przemienić</a> innego tylko za zgodą twego Starszego.</li>
+                        <li><strong>Czwarta: Odpowiedzialność (Accounting)</strong><br>Ci, których stworzysz, są twymi <a href="javascript:void(0)" onclick="goToGlossary('gloss-childe')">Dziećmi</a>. Dopóki nie zostaną uwolnieni, odpowiadasz za nich.</li>
+                        <li><strong>Piąta: Gościnność (Hospitality)</strong><br>Szanuj terytorium innych. Kiedy przybywasz do obcego miasta, musisz przedstawić się temu, kto nim rządzi.</li>
+                        <li><strong>Szósta: Zniszczenie (Destruction)</strong><br>Nie zniszczysz innego Spokrewnionego. Prawo do zniszczenia należy tylko do twego Starszego.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🔧</span>Naprawa Naruszeń</h2>
+                    <h3>Opcje:</h3>
+                    <ul>
+                        <li><strong><a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')">Dominacja</a>:</strong> usuń pamięć świadków</li>
+                        <li><strong>Zabicie świadków:</strong> drastyczne, ale skuteczne</li>
+                        <li><strong>Więź Krwi:</strong> uczyń świadka <a href="javascript:void(0)" onclick="goToGlossary('gloss-ghoul')">Ghoulem</a></li>
+                        <li><strong><a href="javascript:void(0)" onclick="goToDiscipline('disc-obfuscate')">Zaciemnienie</a>:</strong> "retrospektywna" niewidzialność (trudne)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">👮</span>Konsekwencje</h2>
+                    <h3>Od <a href="javascript:void(0)" onclick="goToGlossary('gloss-camarilla')">Camarilli</a>:</h3>
+                    <ul>
+                        <li><strong>Ostrzeżenie:</strong> pierwsze przewinienie</li>
+                        <li><strong>Kara:</strong> utrata statusu, zasobów</li>
+                        <li><strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-blood-hunt')">Blood Hunt</a>:</strong> każdy może cię zabić</li>
+                        <li><strong>Final Death:</strong> egzekucja przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-prince')">Księcia</a></li>
+                    </ul>
+
+                    <h3>Od <a href="javascript:void(0)" onclick="goToGlossary('gloss-second-inquisition')">Drugiej Inkwizycji</a>:</h3>
+                    <ul>
+                        <li>Śledzenie</li>
+                        <li>Infiltracja twojej <a href="javascript:void(0)" onclick="goToGlossary('gloss-coterie')">Koterii</a></li>
+                        <li>Atak z bronią przeciw-wampiryczną</li>
+                        <li>Zniszczenie twojego <a href="javascript:void(0)" onclick="goToGlossary('gloss-haven')">Schronienia</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">📱</span>Era Technologii</h2>
+                    <div class="highlight">
+                        <strong>Nowe zagrożenia:</strong>
+                    </div>
+                    <ul>
+                        <li>Kamery wszędzie (CCTV, telefony)</li>
+                        <li>Social media i rozprzestrzenianie się informacji</li>
+                        <li>Rozpoznawanie twarzy</li>
+                        <li>DNA i analiza kryminalistyczna</li>
+                        <li>Satelity i drony</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🕵️</span><a href="javascript:void(0)" onclick="goToGlossary('gloss-second-inquisition')">Druga Inkwizycja</a></h2>
+                    <p>Współczesna organizacja łowców wampirów:</p>
+                    <ul>
+                        <li><strong>FIRSTLIGHT:</strong> amerykańska jednostka FBI</li>
+                        <li><strong>STAKE:</strong> brytyjska agencja wywiadowcza</li>
+                        <li><strong>Sycylijskie Cechy:</strong> mafia z tradycją łowców</li>
+                        <li><strong>Inne:</strong> Agencje rządowe z całego świata</li>
+                    </ul>
+                    
+                    <div class="highlight">
+                        Mają dostęp do technologii wojskowej i wiedzy o wampirach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="bonds" class="content">
+            <div class="grid">
+                <div class="card" id="gloss-vinculum">
+                    <h2><span class="icon">💉</span>Więź Krwi (Blood Bond)</h2>
+                    <p>Mistyczna więź tworzona przez picie <a href="javascript:void(0)" onclick="goToGlossary('gloss-vitae')">Vitae</a> wampira</p>
+                    
+                    <div class="highlight">
+                        <strong>Zasada:</strong> Wypij krew tego samego wampira 3 razy (w różne noce) = pełna Więź Krwi
+                    </div>
+
+                    <h3>Kto jest kim:</h3>
+                    <ul>
+                        <li><strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-regnant')">Regnant (Pan)</a>:</strong> wampir, którego krew pijesz</li>
+                        <li><strong>Thrall (Niewolnik):</strong> ten, kto pije (ty)</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🔒</span>Poziomy Więzi Krwi</h2>
+                    
+                    <div class="hunger-level">
+                        <strong>Więź 1:</strong> Fascynacja
+                    </div>
+                    <ul>
+                        <li>Myślisz często o Regnancie</li>
+                        <li>Trudniej działać przeciwko niemu</li>
+                    </ul>
+
+                    <div class="hunger-level">
+                        <strong>Więź 2:</strong> Zakochanie
+                    </div>
+                    <ul>
+                        <li>Trudno mu się sprzeciwiać</li>
+                        <li>Regnant jest najważniejszą osobą w życiu Thralla</li>
+                    </ul>
+
+                    <div class="hunger-level">
+                        <strong>Więź 3:</strong> Kompletne oddanie
+                    </div>
+                    <ul>
+                        <li>Całkowite podporządkowanie</li>
+                        <li>Nie możesz mu zaszkodzić (bez rzutu Siły Woli)</li>
+                        <li>Zrobisz dla niego prawie wszystko</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">⛓️</span>Zerwanie Więzi Krwi</h2>
+                    <ul>
+                        <li><strong>Czas:</strong> Miesiące lub lata bez picia krwi Regnanta.</li>
+                        <li><strong>Odległość:</strong> Oddalenie się pomaga.</li>
+                        <li><strong>Trauma:</strong> Zobaczenie Regnanta w innym świetle.</li>
+                        <li><strong>Śmierć Regnanta:</strong> Natychmiastowe zerwanie.</li>
+                    </ul>
+
+                    <div class="highlight">
+                        Zerwanie Więzi 3 jest traumatyczne i może wymagać rzutu na Człowieczeństwo.
+                    </div>
+                </div>
+
+                <div class="card" id="gloss-diablerie">
+                    <h2><span class="icon">💀</span>Diablerie (Amaranth)</h2>
+                    <p><strong>Zjedzenie duszy innego wampira</strong></p>
+                    
+                    <h3>Jak:</h3>
+                    <ul>
+                        <li>Wypij CAŁĄ krew z wampira</li>
+                        <li>Wysysaj dalej, by wyssać jego duszę (esencję)</li>
+                    </ul>
+
+                    <h3>Efekty:</h3>
+                    <ul>
+                        <li><strong>+:</strong> Możliwa obniżka generacji</li>
+                        <li><strong>+:</strong> Czasem nauczysz się jego mocy</li>
+                        <li><strong>-:</strong> Czarne żyły w aurze (Auspex widzi)</li>
+                        <li><strong>-:</strong> Gwarantowana Skaza i utrata Człowieczeństwa</li>
+                        <li><strong>-:</strong> <a href="javascript:void(0)" onclick="goToGlossary('gloss-blood-hunt')">Blood Hunt</a> jeśli Camarilla to wykryje</li>
+                    </ul>
+                </div>
+
+                <div class="card" id="gloss-ghoul">
+                    <h2><span class="icon">🧛</span>Ghoule (Sługi)</h2>
+                    <p>Śmiertelnicy pijący krew wampira (ale nie Przemienieni)</p>
+                    
+                    <h3>Korzyści dla ghoula:</h3>
+                    <ul>
+                        <li>Nie starzeje się (dopóki pije krew)</li>
+                        <li>Może używać 1 kropki dyscypliny fizycznej</li>
+                        <li>Zwiększone atrybuty fizyczne</li>
+                        <li>Szybsza regeneracja</li>
+                    </ul>
+
+                    <h3>Koszty:</h3>
+                    <ul>
+                        <li>Więź 1 od pierwszego picia</li>
+                        <li>Musi pić co miesiąc lub starzeje się gwałtownie</li>
+                        <li>Uzależnienie od krwi</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">⚠️</span>Uzależnienie od Krwi</h2>
+                    <p>Śmiertelnicy mogą uzależnić się od <a href="javascript:void(0)" onclick="goToGlossary('gloss-vitae')">Vitae</a> wampira</p>
+                    
+                    <ul>
+                        <li>Wypicie 3+ razy = ryzyko uzależnienia</li>
+                        <li>Objawy odstawienia: drżenia, halucynacje, szaleństwo</li>
+                        <li>Uzależnieni będą robić wszystko za kolejną dawkę</li>
+                    </ul>
+
+                    <div class="highlight">
+                        To narzędzie kontroli, ale też odpowiedzialność
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="coterie" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">👥</span>Czym jest <a href="javascript:void(0)" onclick="goToGlossary('gloss-coterie')">Koteria</a>?</h2>
+                    <p>Grupa wampirów współpracujących dla wspólnych celów</p>
+                    
+                    <div class="highlight">
+                        <strong>Razem jesteście silniejsi</strong><br>
+                        Koteria daje dostęp do wspólnych zasobów i wsparcia
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎭</span>Typy Koterii</h2>
+                    
+                    <h3>Osiągnięcie:</h3>
+                    <p>Skupiona na konkretnym celu lub projekcie</p>
+
+                    <h3>Bank Krwi:</h3>
+                    <p>Kontroluje źródła krwi w mieście</p>
+
+                    <h3>Komuna:</h3>
+                    <p>Wspólne schronienie i zasoby, równościowa</p>
+
+                    <h3>Kult:</h3>
+                    <p>Grupa śmiertelnych czcicieli</p>
+
+                    <h3>Uznana:</h3>
+                    <p>Zatwierdzona przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-prince')">księcia</a>, ma własne <a href="javascript:void(0)" onclick="goToGlossary('gloss-domain')">Terytorium</a></p>
+
+                    <h3>Koczownicza:</h3>
+                    <p>Wędrowna, bez stałego Schronienia</p>
+
+                    <h3>Na Zlecenie:</h3>
+                    <p>W służbie potężnego patrona</p>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🏰</span>Terytorium (Domain)</h2>
+                    <p>Obszar kontrolowany przez koterię</p>
+                    
+                    <h3>Korzyści:</h3>
+                    <ul>
+                        <li><strong>Łowisko:</strong> dostęp do krwi</li>
+                        <li><strong>Status:</strong> uznanie w społeczności</li>
+                        <li><strong>Kontrola:</strong> wiesz co się dzieje</li>
+                        <li><strong>Zasoby:</strong> dochody z terenu</li>
+                    </ul>
+
+                    <h3>Odpowiedzialność:</h3>
+                    <ul>
+                        <li>Ochrona <a href="javascript:void(0)" onclick="goToGlossary('gloss-masquerade')">Maskarady</a> na swoim terenie</li>
+                        <li>Kontrola innych wampirów</li>
+                        <li>Sprawozdawczość księciu</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">💎</span>Zasoby Koterii</h2>
+                    <p>Wspólna pula, którą grupa może wykorzystać:</p>
+                    
+                    <ul>
+                        <li><strong>Łowisko:</strong> dostęp do krwi</li>
+                        <li><strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-haven')">Schronienie</a>:</strong> bezpieczne miejsce</li>
+                        <li><strong>Portal:</strong> szybkie poruszanie się</li>
+                        <li><strong>Majątek:</strong> pieniądze i wpływy</li>
+                        <li><strong>Słudzy:</strong> pomocnicy i <a href="javascript:void(0)" onclick="goToGlossary('gloss-ghoul')">ghoule</a></li>
+                    </ul>
+
+                    <div class="highlight">
+                        Zasoby są punktowane - koteria może je rozwijać
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🏡</span>Schronienie (Haven)</h2>
+                    <h3>Cechy dobrego Schronienia:</h3>
+                    <ul>
+                        <li><strong>Bezpieczeństwo:</strong> trudne do znalezienia/włamań</li>
+                        <li><strong>Lokalizacja:</strong> blisko łowisk</li>
+                        <li><strong>Luksus:</strong> komfort i wrażenie</li>
+                        <li><strong>Rozmiar:</strong> miejsce dla całej koterii</li>
+                    </ul>
+
+                    <h3>Rodzaje:</h3>
+                    <ul>
+                        <li>Opuszczony budynek</li>
+                        <li>Apartament w wieżowcu</li>
+                        <li>Kanały/metro</li>
+                        <li>Klub nocny</li>
+                        <li>Posiadłość za miastem</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🤝</span>Dynamika Grupy</h2>
+                    <h3>Role w koterii:</h3>
+                    <ul>
+                        <li><strong>Przywódca:</strong> podejmuje decyzje</li>
+                        <li><strong>Twarz:</strong> negocjator i dyplomata</li>
+                        <li><strong>Mięśnie:</strong> ochroniarz</li>
+                        <li><strong>Mózg:</strong> strateg i planista</li>
+                        <li><strong>Zwiadowca:</strong> szpieg i wywiadowca</li>
+                    </ul>
+
+                    <div class="highlight">
+                        Pamiętaj: koteria to też źródło konfliktów wewnętrznych
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="clans" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">🧬</span>Klany, Generacje i Moc Krwi (BP)</h2>
+                    <div class="card-content">
+                        <p>Poniższa lista opisuje Klany. Pamiętaj:</p>
+                        <ul>
+                            <li><strong>Generacja (Lore):</strong> Według legend, każdy z 13 klanów został założony przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-antediluvian')">Przedpotopowca</a> (3 Generacja).</li>
+                            <li><strong>Moc Krwi (Blood Potency - Mechanika):</strong> W V5, siła krwi postaci nie jest mierzona Generacją, ale <strong>Mocą Krwi</strong> (BP), która rośnie z czasem i doświadczeniem.</li>
+                            <li><strong>Generacja Postaci:</strong> Postacie graczy (Neonaci) są zwykle <strong>10-13 Generacji</strong>.</li>
+                            <li><strong>Cienkokrwiści:</strong> Wampiry <strong>14-16 Generacji</strong>. Ich krew jest zbyt słaba, by mieć BP (zamiast tego mają Alchemię).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🌹</span>Brujah - Buntownicy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Wojownicy, rewolucjoniści, buntownicy</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-celerity')"><strong>Celerity</strong></a> - nadludzka szybkość</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-potence')"><strong>Potence</strong></a> - nadludzka siła</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-presence')"><strong>Presence</strong></a> - charyzma i manipulacja emocjami</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Gniew i trudności z kontrolą emocji</li>
+                            <li>Trudność testów oporu przeciw <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szałowi</a> Furii jest wyższa o 2.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🦇</span>Gangrel - Wędrowcy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Dzikie bestie, survivalowcy, samotni</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-animalism')"><strong>Animalism</strong></a> - kontrola zwierząt</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-fortitude')"><strong>Fortitude</strong></a> - niezniszczalność</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-protean')"><strong>Protean</strong></a> - zmiana kształtu</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Zwierzęce cechy fizyczne</li>
+                            <li>Po wpadnięciu w Szał, zyskują 1 cechę zwierzęcą (np. futro, kocie oczy, warczenie).</li>
+                            <li>Cechy te dają -1 kość do jednej puli społecznej (kumuluje się).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">👁️</span>Malkavian - Szaleńcy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Prorocy, wizjonerzy, szaleńcy</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-auspex')"><strong>Auspex</strong></a> - zwiększone zmysły i percepcja</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')"><strong>Dominate</strong></a> - kontrola umysłu</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-obfuscate')"><strong>Obfuscate</strong></a> - niewidzialność i ukrywanie się</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Dotknięci psychiczną przypadłością (np. halucynacje, paranoja, kompulsje).</li>
+                            <li>Gdy 1 pojawi się na kości Głodu (nawet przy sukcesie), przypadłość się ujawnia.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">💀</span>Nosferatu - Kanałowcy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Szpiedzy, handlarze informacji, wyrzutki</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-animalism')"><strong>Animalism</strong></a> - kontrola zwierząt</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-obfuscate')"><strong>Obfuscate</strong></a> - niewidzialność</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-potence')"><strong>Potence</strong></a> - nadludzka siła</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Odstraszająca brzydota</li>
+                            <li>Atrybut Wygląd (Appearance) jest na stałe na poziomie 0.</li>
+                            <li>Wszystkie testy społeczne (poza zastraszaniem) automatycznie kończą się porażką, chyba że ukryją swój wygląd.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎪</span>Ravnos - Koczownicy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Oszuści, iluzjoniści, wędrowcy</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-animalism')"><strong>Animalism</strong></a> - kontrola zwierząt</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-obfuscate')"><strong>Obfuscate</strong></a> - niewidzialność i iluzje</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-presence')"><strong>Presence</strong></a> - charyzma</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Kompulsywne nawyki (np. hazard, kradzież, oszustwo).</li>
+                            <li>Gdy znajdą się w sytuacji pozwalającej ulec nawykowi, muszą wykonać test Siły Woli (trudność 2+).</li>
+                            <li>Porażka oznacza, że muszą ulec nawykowi.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🎭</span>Toreador - Artyści</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Estetyczni, uwodziciele, koneserzy</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-auspex')"><strong>Auspex</strong></a> - zwiększone zmysły</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-celerity')"><strong>Celerity</strong></a> - nadludzka szybkość</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-presence')"><strong>Presence</strong></a> - charyzma i fascynacja</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Opętanie pięknem</li>
+                            <li>W obecności czegoś pięknego (osoba, dzieło sztuki, wschód słońca) muszą wykonać test Determinacja + Opanowanie (trudność 2).</li>
+                            <li>Porażka = wpadają w trans na scenę.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🐍</span>Tremere - Czarnoksiężnicy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Magowie krwi, uczeni, hierarchiczni</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-auspex')"><strong>Auspex</strong></a> - zwiększone zmysły</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')"><strong>Dominate</strong></a> - kontrola umysłu</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-blood-sorcery')"><strong>Blood Sorcery</strong></a> - magia krwi</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Krwawe więzi hierarchii</li>
+                            <li>Trudniej oprzeć się Więzi Krwi od innych wampirów (Więź 1 tworzy się po 1 piciu).</li>
+                            <li>Nie mogą stworzyć Więzi Krwi ze swoim <a href="javascript:void(0)" onclick="goToGlossary('gloss-childe')">Potomkiem</a>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">⚰️</span>Ventrue - Władcy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Przywódcy, królowie, arystokraci</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')"><strong>Dominate</strong></a> - kontrola umysłu</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-fortitude')"><strong>Fortitude</strong></a> - niezniszczalność</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-presence')"><strong>Presence</strong></a> - charyzma i majestat</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Wybredni w kwestii krwi</li>
+                            <li>Mogą pić krew tylko od określonego typu ofiar (np. "tylko blondyni", "tylko przestępcy", "tylko szczęśliwi").</li>
+                            <li>Inna krew nie syci Głodu i wywołuje wymioty.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">🐙</span>Tzimisce - Kształtownicy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Fleshcrafters, starożytni panowie, filozofowie</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-animalism')"><strong>Animalism</strong></a> - kontrola zwierząt</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')"><strong>Dominate</strong></a> - kontrola umysłu</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-protean')"><strong>Protean</strong></a> - zmiana kształtu (lub Vicissitude jako amalgam)</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Zależność od ziemi rodzinnej</li>
+                            <li>Muszą spać z grudką swojej ziemi (np. z miejsca narodzin lub Przemiany).</li>
+                            <li>Każdy dzień bez tego zadaje Poważne obrażenia Siły Woli, których nie można uleczyć.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🌊</span>Lasombra - Magistrzy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Manipulatorzy cieni, byli przywódcy Sabbatu</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-dominate')"><strong>Dominate</strong></a> - kontrola umysłu</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-oblivion')"><strong>Oblivion</strong></a> - kontrola cieni i Otchłani</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-potence')"><strong>Potence</strong></a> - nadludzka siła</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Brak odbicia w lustrach i na nagraniach cyfrowych.</li>
+                            <li>Ich obecność powoduje zakłócenia na sprzęcie elektronicznym.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">👻</span>Hecata - Nekromanci</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Strażnicy umarłych, nekromanci (zjednoczenie klanów Śmierci)</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-auspex')"><strong>Auspex</strong></a> - zwiększone zmysły</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-fortitude')"><strong>Fortitude</strong></a> - niezniszczalność</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-oblivion')"><strong>Oblivion</strong></a> - nekromancja</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Ich ukąszenie jest bolesne i zostawia gnijące ślady.</li>
+                            <li>Śmiertelnicy, których ugryzą, mogą umrzeć z bólu lub szoku.</li>
+                            <li>Trudności z subtelnym karmieniem się.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">☥</span>Ministry (Ministerstwo) - (Setnici)</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Kusiciele, wyznawcy Seta, handlarze grzechem</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-obfuscate')"><strong>Obfuscate</strong></a> - niewidzialność</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-presence')"><strong>Presence</strong></a> - charyzma</li>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-protean')"><strong>Protean</strong></a> - zmiana kształtu (forma węża)</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Alergia na jasne światło (inne niż słońce).</li>
+                            <li>Otrzymują Poważne obrażenia od mocnego światła i mają -1 kość w jego obecności.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🦁</span>Caitiff - Bezklaniowcy</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Wyrzutki, bez przynależności klanowej</p>
+                        <h3>Dyscypliny:</h3>
+                        <ul>
+                            <li>Dowolne 3 dyscypliny do wyboru przy tworzeniu postaci.</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Brak statusu społecznego, pogardzani.</li>
+                            <li>Koszt PD za pierwszą kropkę nowej dyscypliny to 6 (zamiast 5).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">🩸</span>Thin-Bloods - Cienkokrwiści</h2>
+                    <div class="card-content">
+                        <p><strong>Rola:</strong> Wampiry 14+ generacji, najbardziej oddaleni od Kaina</p>
+                        <h3>Cechy:</h3>
+                        <ul>
+                            <li><a href="javascript:void(0)" onclick="goToDiscipline('disc-thin-blood-alchemy')"><strong>Thin-Blood Alchemy</strong></a> - unikalna magia</li>
+                            <li>Mogą częściowo tolerować słońce (zależne od Mocy Krwi)</li>
+                            <li>Mogą jeść ludzkie jedzenie (choć muszą zwymiotować)</li>
+                        </ul>
+                        <h3>Słabość (Bane):</h3>
+                        <ul>
+                            <li>Losowa wada przy stworzeniu (np. nie mogą tworzyć Więzi Krwi, nie mogą tworzyć Ghouli, itp.).</li>
+                            <li>Gardzeni przez wszystkie klany.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="advancement" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">📈</span>Zdobywanie Doświadczenia (PD/XP)</h2>
+                    <p>Punkty doświadczenia przyznawane są na koniec sesji.</p>
+                    <h3>Otrzymujesz 1 PD za:</h3>
+                    <ul>
+                        <li>Każde pytanie, na które odpowiedziałeś w kronice.</li>
+                        <li>Każde Przekonanie, które było wyzwaniem.</li>
+                        <li>Każdy raz, gdy Twoja Ambicja lub Pragnienie były motorem napędowym sceny.</li>
+                        <li>(Opcjonalnie) Głosowanie na MVP sesji.</li>
+                    </ul>
+                    <div class="highlight">
+                        <strong>Kluczowa zasada:</strong> Zdobywasz PD za granie, a nie za "wygrywanie". Porażki są często bardziej wartościowe.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="icon">💰</span>Koszty Rozwoju Postaci</h2>
+                    <h3>Wydawanie PD:</h3>
+                    <ul>
+                        <li><strong>Nowa Umiejętność:</strong> 3 PD</li>
+                        <li><strong>Nowa Specjalizacja:</strong> 3 PD</li>
+                        <li><strong>Umiejętność:</strong> Nowy Poziom x 3 PD</li>
+                        <li><strong>Atrybut:</strong> Nowy Poziom x 5 PD</li>
+                    </ul>
+                    
+                    <h3>Dyscypliny:</h3>
+                    <ul>
+                        <li><strong>Dyscyplina Klanowa:</strong> Nowy Poziom x 5 PD</li>
+                        <li><strong>Dyscyplina Poza Klanem:</strong> Nowy Poziom x 7 PD</li>
+                        <li><strong><a href="javascript:void(0)" onclick="goToDiscipline('disc-thin-blood-alchemy')">Alchemia Cienkich Krwi</a>:</strong> Nowy Poziom x 4 PD</li>
+                        <li><strong>Nowa formuła Alchemii:</strong> 3 PD</li>
+                        <li><strong>Rytuał <a href="javascript:void(0)" onclick="goToDiscipline('disc-blood-sorcery')">Magii Krwi</a>:</strong> Poziom Rytuału x 3 PD</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h2><span class="icon">🩸</span>Moc Krwi (Blood Potency)</h2>
+                    <p>Moc Krwi rośnie z czasem i doświadczeniem. Nie kupuje się jej za PD.</p>
+                    <ul>
+                        <li>Rośnie co ok. 5-10 sesji (decyzja MG).</li>
+                        <li>Rośnie po popełnieniu <a href="javascript:void(0)" onclick="goToGlossary('gloss-diablerie')">Diablerie</a> na wampirze niższej generacji.</li>
+                    </ul>
+                    <h3>Efekty Wzrostu:</h3>
+                    <ul>
+                        <li><strong>+:</strong> Zwiększa bonus z Blood Surge</li>
+                        <li><strong>+:</strong> Zwiększa moc leczenia Poważnych ran</li>
+                        <li><strong>+:</strong> Utrudnia niektóre moce Dyscyplin</li>
+                        <li><strong>-:</strong> Zwiększa kary za karmienie (np. trudniej zaspokoić Głód krwią zwierząt)</li>
+                        <li><strong>-:</strong> Skraca czas aktywności w dzień</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="factions" class="content">
+            <div class="grid">
+                <div class="card" id="gloss-camarilla">
+                    <h2><span class="icon">👑</span>Camarilla (Wieża z Kości Słoniowej)</h2>
+                    <p>Największa, najbardziej wpływowa i konserwatywna sekta. Uważają się za "rząd" wampirów.</p>
+                    <h3>Filozofia:</h3>
+                    <ul>
+                        <li><strong><a href="javascript:void(0)" onclick="goToGlossary('gloss-masquerade')">Maskarada</a></strong> jest absolutnie święta.</li>
+                        <li>Hierarchia i porządek (Książę > Primogen > Ancillae > Neonaci).</li>
+                        <li>Utrzymanie stabilności i ukrywanie się przed ludzkością.</li>
+                        <li>Aktywnie zwalczani przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-second-inquisition')">Drugą Inkwizycję</a>.</li>
+                    </ul>
+                    <h3>Typowe Klany:</h3>
+                    <ul>
+                        <li>Ventrue, Toreador, Tremere, Malkavian, Nosferatu (choć niektórzy są Anarchistami).</li>
+                    </ul>
+                </div>
+                
+                <div class="card" id="gloss-anarch">
+                    <h2><span class="icon">🔥</span>Anarchowie (Ruch Anarchistyczny)</h2>
+                    <p>Buntownicy przeciwko tyranii Camarilli. Walczą o wolność i równe prawa dla młodszych wampirów.</p>
+                    <h3>Filozofia:</h3>
+                    <ul>
+                        <li>Odrzucenie władzy Starszych.</li>
+                        <li>Maskarada jest ważna, ale bardziej jako "narzędzie przetrwania" niż święty dogmat.</li>
+                        <li>Bardziej elastyczni i nowocześni.</li>
+                        <li>Kontrolują wiele terytoriów "na poziomie ulicy".</li>
+                    </ul>
+                    <h3>Typowe Klany:</h3>
+                    <ul>
+                        <li>Brujah (większość), Gangrel (większość), Ministerstwo, Caitiff, Cienkokrwiści (często), oraz buntownicy z innych klanów.</li>
+                    </ul>
+                </div>
+
+                <div class="card" id="gloss-sabbat">
+                    <h2><span class="icon">⚔️</span>Sabbat (Miecz Kaina)</h2>
+                    <p>Kiedyś główny wróg Camarilli, obecnie rozbity przez Drugą Inkwizycję i wojny wewnętrzne. Uważani za potwory i fanatyków.</p>
+                    <h3>Filozofia:</h3>
+                    <ul>
+                        <li>Wampiry są drapieżnikami na szczycie łańcucha pokarmowego.</li>
+                        <li>Odrzucenie Człowieczeństwa na rzecz "Ścieżek Oświecenia".</li>
+                        <li><a href="javascript:void(0)" onclick="goToGlossary('gloss-masquerade')">Maskarada</a> jest dla tchórzy.</li>
+                        <li>Brutalne rytuały, <a href="javascript:void(0)" onclick="goToGlossary('gloss-diablerie')">Diablerie</a> i pogarda dla śmiertelników.</li>
+                    </ul>
+                    <h3>Typowe Klany:</h3>
+                    <ul>
+                        <li>Lasombra (dawniej) i Tzimisce. Większość Sabbat jest obecnie na Bliskim Wschodzie, walcząc w Wojnie Gehenny.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+	
+<div id="merits" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">👍</span>Zalety (Merits) - Przykłady</h2>
+                    <p>Pozytywne aspekty tła. Otrzymujesz je m.in. wybierając <a href="javascript:void(0)" onclick="showTab('predator', document.querySelector('.tab[onclick*=\'predator\']'))">Typ Drapieżnika</a> lub kupując za punkty.</p>
+                    <ul>
+                        <li><strong>Zasoby (Resources):</strong> Twój majątek i dochód.</li>
+                        <li><strong>Stado (Herd):</strong> Grupa śmiertelników, od których możesz bezpiecznie pić.</li>
+                        <li><strong>Sława (Fame):</strong> Rozpoznawalność w świecie śmiertelników.</li>
+                        <li><strong>Kontakty (Contacts):</strong> Sieć informatorów.</li>
+                        <li><strong>Sojusznicy (Allies):</strong> Potężni przyjaciele, którzy ci pomogą.</li>
+                        <li><strong>Schronienie (Haven):</strong> Punkty zainwestowane w bezpieczeństwo <a href="javascript:void(0)" onclick="goToGlossary('gloss-haven')">Schronienia</a>.</li>
+                        <li><strong>Status:</strong> Twoja pozycja w <a href="javascript:void(0)" onclick="goToGlossary('gloss-camarilla')">Camarilli</a> lub wśród <a href="javascript:void(0)" onclick="goToGlossary('gloss-anarch')">Anarchistów</a>.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2><span class="icon">👎</span>Wady (Flaws) - Przykłady</h2>
+                    <p>Negatywne aspekty, które komplikują życie. Otrzymujesz je np. z <a href="javascript:void(0)" onclick="showTab('predator', document.querySelector('.tab[onclick*=\'predator\']'))">Typu Drapieżnika</a> lub by zyskać punkty na Zalety.</p>
+                    <ul>
+                        <li><strong>Wróg (Enemy):</strong> Ktoś aktywnie próbuje ci zaszkodzić.</li>
+                        <li><strong>Mroczny Sekret (Dark Secret):</strong> Informacja, która może cię zniszczyć.</li>
+                        <li><strong>Wykluczony (Shunned):</strong> Pogarda ze strony frakcji lub klanu.</li>
+                        <li><strong>Poszukiwany (Hunted):</strong> Ścigany przez łowców lub policję (np. <a href="javascript:void(0)" onclick="goToGlossary('gloss-second-inquisition')">Inkwizycję</a>).</li>
+                        <li><strong>Obsesja (Obsession):</strong> Masz kompulsję na punkcie czegoś lub kogoś.</li>
+                        <li><strong>Niepijalna Krew (Bane):</strong> Podobne do słabości Ventrue, nie możesz pić określonego typu krwi.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2><span class="icon">⚖️</span>Mechanika Zalet i Wad</h2>
+                    <div class="highlight">
+                        <strong>Budżet:</strong> Przy tworzeniu postaci otrzymujesz <strong>7 punktów</strong> na Zalety.
+                    </div>
+                    <ul>
+                        <li>Możesz wziąć Wady (maksymalnie do 7 punktów), aby zyskać dodatkowe punkty na Zalety.</li>
+                        <li>Np. biorąc Wadę za 2 punkty, masz teraz 9 punktów (7+2) do wydania na Zalety.</li>
+                        <li>Nie możesz skończyć z więcej niż 7 punktami Wad.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="creation" class="content">
+            <div class="grid">
+                <div class="card">
+                    <h2><span class="icon">📝</span>Skrót Tworzenia Postaci (Krok po Kroku)</h2>
+                    <ol style="list-style: decimal; padding-left: 30px; margin-top: 10px;">
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Koncept i Klan:</strong> Kim jesteś? Wybierz <a href="javascript:void(0)" onclick="showTab('clans', document.querySelector('.tab[onclick*=\'clans\']'))">Klan</a>.</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Atrybuty:</strong> Rozdaj punkty (np. 4/3/1) w kategoriach <a href="javascript:void(0)" onclick="showTab('basics', document.querySelector('.tab[onclick*=\'basics\']'))">Atrybutów</a> (każdy zaczyna z 1 kropką).</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Umiejętności:</strong> Rozdaj punkty (np. 11/7/4) w kategoriach <a href="javascript:void(0)" onclick="showTab('basics', document.querySelector('.tab[onclick*=\'basics\']'))">Umiejętności</a>.</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Dyscypliny:</strong> Wybierz <strong>2 kropki</strong> w <a href="javascript:void(0)" onclick="showTab('disciplines', document.querySelector('.tab[onclick*=\'disciplines\']'))">Dyscyplinach</a> Klanowych (np. 2 w jednej lub po 1 w dwóch).</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Typ Drapieżnika:</strong> Wybierz <a href="javascript:void(0)" onclick="showTab('predator', document.querySelector('.tab[onclick*=\'predator\']'))">Typ Drapieżnika</a> (daje bonusy i/lub wady).</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Zalety i Wady:</strong> Masz budżet <strong>7 punktów</strong> na Zalety (patrz nowa zakładka "Zalety i Wady").</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Przekonania i Punkty Oparcia:</strong> Stwórz 1-3 <a href="javascript:void(0)" onclick="showTab('humanity', document.querySelector('.tab[onclick*=\'humanity\']'))">Przekonania</a> i połącz je z Punktami Oparcia.</li>
+                        <li style="margin: 8px 0; padding-left: 15px; position: relative;"><strong>Statystyki Końcowe:</strong>
+                            <ul>
+                                <li><strong>Zdrowie =</strong> Wytrzymałość + 3</li>
+                                <li><strong>Siła Woli =</strong> Opanowanie + Determinacja</li>
+                                <li><strong>Człowieczeństwo =</strong> 7 (standardowo)</li>
+                                <li><strong>Moc Krwi =</strong> 1 (dla Gen 10-13) lub 0 (Cienkokrwiści)</li>
+                                <li><strong>Głód =</strong> Zacznij pierwszą sesję z Głodem 1</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        ```
+
+        <div id="glossary" class="content">
+    <div class="card">
+        <h2><span class="icon">📖</span>Słowniczek Terminów</h2>
+        
+        <div class="glossary-term" id="gloss-amaranth">
+            <dt>Amaranth</dt>
+            <dd>Eufemizm na <a href="javascript:void(0)" onclick="goToGlossary('gloss-diablerie')">Diablerie</a> - zjedzenie duszy innego wampira. Jedna z najcięższych zbrodni.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-ambition">
+            <dt>Ambicja (Ambition)</dt>
+            <dd>Długoterminowy, główny cel twojej postaci. Realizacja kroków w kierunku Ambicji jest jednym ze sposobów na odzyskiwanie Siły Woli na koniec sesji.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-ancilla">
+            <dt>Ancilla (mn. Ancillae)</dt>
+            <dd>Wampir w średnim wieku (50-300 lat). Między Neonates a Elders.</dd>
+        </div>
+	
+<div class="glossary-term" id="gloss-aggravated-damage">
+    <dt>Aggravated Damage (Obrażenia Poważne)</dt>
+    <dd>Poważne rany zadane ogniem, słońcem lub innymi źródłami, przed którymi nawet wampir jest bezbronny. Leczenie ich wymaga wielu udanych Prób Przebudzenia lub bardzo dużo czasu (nawet dni czy tygodni). Po zapełnieniu wszystkich Kratek Zdrowia Obrażeniami Poważnymi — wampir zapada w <a href="javascript:void(0)" onclick="goToGlossary('gloss-torpor-term')">Letarg</a>.</dd>
+</div>
+
+        <div class="glossary-term" id="gloss-anarch-term">
+            <dt>Anarch</dt>
+            <dd>Wampir odrzucający władzę <a href="javascript:void(0)" onclick="goToGlossary('gloss-camarilla')">Camarilli</a>. Członek ruchu anarchistycznego.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-antediluvian">
+            <dt>Antediluvian (Przedpotopowiec)</dt>
+            <dd>Wampir Trzeciej Generacji, wnuk Kaina. Legendarni założyciele 13 klanów. Ich przebudzenie zwiastuje Gehennę.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-beast">
+            <dt>Beast, The (Bestia)</dt>
+            <dd>Zwierzęca, prymitywna natura każdego wampira. Źródło <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy')">Szału</a> i głodu.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-bestial-failure-term">
+            <dt>Bestial Failure (Bestialska Porażka)</dt>
+            <dd>Porażka w rzucie (brak sukcesów) połączona z wynikiem '1' na co najmniej jednej kości Głodu. Prowadzi do dramatycznych, negatywnych konsekwencji, gdy <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestia</a> przejmuje kontrolę (np. aktywując <a href="javascript:void(0)" onclick="goToGlossary('gloss-compulsion-term')">Przymus</a> lub wywołując <a href="javascript:void(0)" onclick="goToGlossary('gloss-frenzy-term')">Szał</a>).</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-blood-hunt">
+            <dt>Blood Hunt (Lextalionis)</dt>
+            <dd>Oficjalne polowanie na wampira ogłoszone przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-prince')">Księcia</a>. Każdy może go zabić bezkarnie. Najwyższa kara.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-blood-potency">
+            <dt>Blood Potency (Moc Krwi)</dt>
+            <dd>Moc krwi wampira. Im wyższa, tym potężniejszy (ale trudniej się karmić). Główna mechanika zastępująca <a href="javascript:void(0)" onclick="goToGlossary('gloss-generation')">Generację</a> w V5.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-blood-surge">
+            <dt>Blood Surge (Przypływ Krwi)</dt>
+            <dd>Wydanie <a href="javascript:void(0)" onclick="goToGlossary('gloss-rouse-check')">Testu Przebudzenia</a>, aby dodać dodatkowe kości do rzutu Atrybutem (np. Siłą, Zręcznością).</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-caine">
+            <dt>Caine</dt>
+            <dd>Biblijny Kain - pierwszy wampir, przeklęty przez Boga za bratobójstwo.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-camarilla-term">
+            <dt>Camarilla</dt>
+            <dd>Największa sekta wampiryczna. Wierzy w <a href="javascript:void(0)" onclick="goToGlossary('gloss-masquerade')">Maskaradę</a> i hierarchię. "Wieża Kości Słoniowej".</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-childe">
+            <dt>Childe (Potomek)</dt>
+            <dd>Potomek wampira. Ten, którego <a href="javascript:void(0)" onclick="goToGlossary('gloss-embrace')">Przemienił</a> twój <a href="javascript:void(0)" onclick="goToGlossary('gloss-sire')">Sire</a>.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-compulsion-term">
+            <dt>Compulsion (Przymus)</dt>
+            <dd>Nagły, irracjonalny impuls od <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestii</a>, często wywołany przez Głód lub porażkę. Każdy klan ma swój unikalny Przymus.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-coterie-term">
+            <dt>Coterie (Koteria)</dt>
+            <dd>Grupa wampirów współpracujących dla wspólnych celów.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-daysleep">
+            <dt>Daysleep</dt>
+            <dd>Przymusowy sen w ciągu dnia. Obudzenie się wymaga Testu Przebudzenia (trudność 3+) i jest bolesne.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-diablerie-term">
+            <dt>Diablerie</dt>
+            <dd>Zjedzenie duszy innego wampira przez wypicie całej jego krwi i esencji.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-dyscrasia">
+            <dt>Dyskrazja (Dyscrasia)</dt>
+            <dd>Tymczasowy bonus lub pomniejsza moc (np. +1 kość do Atletyki na scenę), którą wampir zyskuje po wypiciu krwi o bardzo silnym <a href="javascript:void(0)" onclick="goToGlossary('gloss-resonance')">Rezonansie</a>. Efekt uboczny "przeładowania" emocjami ofiary.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-domain">
+            <dt>Domain (Terytorium)</dt>
+            <dd>Obszar kontrolowany przez wampira lub koterię. Przyznany przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-prince')">Księcia</a>.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-elder">
+            <dt>Elder (Starszy)</dt>
+            <dd>Starożytny wampir (300+ lat). Potężny i doświadczony.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-elysium">
+            <dt>Elysium (Elizjum)</dt>
+            <dd>Neutralne miejsce spotkań wampirów. Zabroniona przemoc i używanie dyscyplin. Zwykle muzea, teatry, galerie.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-embrace">
+            <dt>Embrace, The (Przemiana)</dt>
+            <dd>Przemiana śmiertelnika w wampira. Śmierć i odrodzenie w jednym.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-frenzy-term">
+            <dt>Frenzy (Szał)</dt>
+            <dd>Chwilowa utrata kontroli na rzecz <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestii</a>, prowadząca do niekontrolowanej agresji (Furia), paniki (Terror) lub żerowania (Głód).</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-generation">
+            <dt>Generation (Generacja)</dt>
+            <dd>Poziom oddalenia od Kaina. Im niższa generacja (bliżej Kaina), tym potężniejsza krew. W V5, mechanika Generacji jest w dużej mierze zastąpiona przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-blood-potency')">Moc Krwi (Blood Potency)</a>. Postacie graczy to zwykle 10-13 generacja. 14+ to Cienkokrwiści.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-gehenna">
+            <dt>Gehenna</dt>
+            <dd>Legendarna "apokalipsa" wampirów. Czas, gdy <a href="javascript:void(0)" onclick="goToGlossary('gloss-antediluvian')">Przedpotopowcy</a> budzą się, by pożreć swoje potomstwo.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-ghoul-term">
+            <dt>Ghoul (Ghul)</dt>
+            <dd>Śmiertelnik pijący krew wampira. Nie starzeje się, ma moce, ale jest uzależniony i związany <a href="javascript:void(0)" onclick="goToGlossary('gloss-vinculum')">Więzią Krwi</a>.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-haven">
+            <dt>Haven (Schronienie)</dt>
+            <dd>Bezpieczne schronienie wampira. Miejsce do spania w dzień.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-hunger">
+            <dt>Hunger (Głód)</dt>
+            <dd>Miara pragnienia krwi (0-5). Im wyższy, tym większe ryzyko utraty kontroli.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-jyhad">
+            <dt>Jyhad</dt>
+            <dd>Wieczna, tajna wojna między Starszymi wampirami. Młodsze wampiry są pionkami w tej grze.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-kindred">
+            <dt>Kindred (Spokrewnieni)</dt>
+            <dd>Jak wampiry nazywają siebie. "Pobratymcy".</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-kine">
+            <dt>Kine (Bydło)</dt>
+            <dd>Śmiertelnicy. Pogardliwy termin.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-lick">
+            <dt>Lick</dt>
+            <dd>Slangowe określenie wampira. Używane przez młodszych Kindred.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-masquerade-term">
+            <dt>Masquerade, The (Maskarada)</dt>
+            <dd>Pierwsza Tradycja - nie ujawniaj się śmiertelnikom. Najważniejsze prawo Camarilli.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-messy-critical-term">
+            <dt>Messy Critical (Brutalny Krytyk)</dt>
+            <dd>Sukces krytyczny połączony z wynikiem '10' na co najmniej jednej kości Głodu. Osiągasz cel, ale w przesadny, brutalny i niekontrolowany sposób, ujawniając <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestię</a> (np. aktywując <a href="javascript:void(0)" onclick="goToGlossary('gloss-compulsion-term')">Przymus</a>).</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-methuselah">
+            <dt>Methuselah (Matuzalem)</dt>
+            <dd>Wampir 4 lub 5 Generacji. Starożytne, potężne istoty, często w stanie <a href="javascript:void(0)" onclick="goToGlossary('gloss-torpor')">Letargu</a>, bliższe Bestii niż człowiekowi.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-neonate">
+            <dt>Neonate (Nowicjusz)</dt>
+            <dd>Młody wampir (0-50 lat). Gracze zwykle zaczynają jako Neonates.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-prince">
+            <dt>Prince (Książę)</dt>
+            <dd>Władca miasta Camarilli. Ma absolutną władzę na swoim <a href="javascript:void(0)" onclick="goToGlossary('gloss-domain')">Terytorium</a>.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-primogen">
+            <dt>Primogen</dt>
+            <dd>Rada starszych reprezentujących klany w mieście. Doradcy księcia.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-desire">
+            <dt>Pragnienie (Desire)</dt>
+            <dd>Krótkoterminowy cel postaci, ustalany zazwyczaj na początku sesji (np. "zdobyć szacunek Szeryfa", "znaleźć nową ofiarę"). Zrealizowanie Pragnienia pozwala odzyskać 1 punkt Siły Woli.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-conviction">
+            <dt>Przekonanie (Conviction)</dt>
+            <dd>Jedna z 1-3 zasad moralnych, które definiują twoją postać i pomagają jej oprzeć się <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestii</a>. Każde Przekonanie jest powiązane z <a href="javascript:void(0)" onclick="goToGlossary('gloss-touchstone')">Punktem Oparcia</a>. Złamanie go generuje <a href="javascript:void(0)" onclick="goToGlossary('gloss-stain')">Skazy</a>.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-regnant-term">
+            <dt>Regnant</dt>
+            <dd>Wampir, którego krew pijesz w <a href="javascript:void(0)" onclick="goToGlossary('gloss-vinculum')">Więzi Krwi</a>. Twój pan.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-resonance">
+            <dt>Rezonans (Resonance)</dt>
+            <dd>Emocjonalny "smak" krwi śmiertelnika, zależny od jego dominującego nastroju w chwili picia (np. Choleryk - gniew, Sangwinik - radość). Picie krwi o określonym Rezonansie może prowadzić do <a href="javascript:void(0)" onclick="goToGlossary('gloss-dyscrasia')">Dyskrazji</a> lub pomagać w nauce Dyscyplin.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-rouse-check">
+            <dt>Rouse Check (Test Przebudzenia)</dt>
+            <dd>Rzut 1k10 wykonywany przy używaniu krwi (np. aktywacja dyscyplin, leczenie). Porażka (1-5) zwiększa Głód o 1.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-sabbat-term">
+            <dt>Sabbat</dt>
+            <dd>Radykalna sekta wampirów. Wrogowie Camarilli. Wierzą w otwarty konflikt z ludźmi.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-second-inquisition">
+            <dt>Second Inquisition (Druga Inkwizycja)</dt>
+            <dd>Współczesna organizacja łowców wampirów. CIA, FBI, STAKE i inne agencje rządowe.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-sheriff">
+            <dt>Sheriff (Szeryf)</dt>
+            <dd>Egzekutor praw <a href="javascript:void(0)" onclick="goToGlossary('gloss-prince')">Księcia</a>. Policjant miasta wampirów.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-sire">
+            <dt>Sire (Stwórca)</dt>
+            <dd>Wampir, który cię <a href="javascript:void(0)" onclick="goToGlossary('gloss-embrace')">Przemienił</a>. Twój "rodzic".</dd>
+        </div>
+	<div class="glossary-term" id="gloss-superficial-damage">
+    <dt>Superficial Damage (Obrażenia Powierzchowne)</dt>
+    <dd>Lekkie rany jak siniaki, zadrapania czy płytkie rozcięcia. Wampiry regenerują je bardzo szybko — każda udana Próba Przebudzenia leczy całą pulę Obrażeń Powierzchownych. Jeśli ilość tych obrażeń przekroczy dwukrotność twojego Zdrowia, nadmiar zamienia się w Obrażenia Poważne.</dd>
+</div>
+        
+        <div class="glossary-term" id="gloss-stain">
+            <dt>Stain (Skaza)</dt>
+            <dd>Mentalna "rana" na duszy wampira, otrzymywana za złamanie <a href="javascript:void(0)" onclick="goToGlossary('gloss-touchstone')">Przekonania</a> lub popełnienie nieludzkiego czynu. Prowadzi do utraty Człowieczeństwa.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-torpor-term">
+            <dt>Torpor (Letarg)</dt>
+            <dd>Głęboka śpiączka wampira. Spowodowana ciężkimi ranami lub brakiem krwi. Może trwać lata.</dd>
+        </div>
+        
+        <div class="glossary-term" id="gloss-touchstone">
+            <dt>Touchstone (Punkt Oparcia)</dt>
+            <dd>Śmiertelnik, miejsce lub ideał, który łączy wampira z jego Człowieczeństwem. Powiązany z Przekonaniem.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-traditions-term">
+            <dt>Traditions, The Six (Sześć Tradycji)</dt>
+            <dd>Sześć zasad Camarilli: Maskarada, Terytorium, Potomstwo, Odpowiedzialność, Gościnność, Zniszczenie.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-vessel">
+            <dt>Vessel (Naczynie)</dt>
+            <dd>Ofiara/źródło krwi. Śmiertelnik, z którego się karmisz.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-vinculum-term">
+            <dt>Vinculum</dt>
+            <dd>Inny termin na <a href="javascript:void(0)" onclick="goToGlossary('gloss-vinculum')">Więź Krwi</a>. Mistyczna więź między Regnant a Thrall.</dd>
+
+        </div>
+        <div class="glossary-term" id="gloss-vitae-term">
+            <dt>Vitae</dt>
+            <dd>Krew wampira. Ma właściwości magiczne i uzależniające.</dd>
+        </div>
+
+        <div class="glossary-term" id="gloss-wight-term">
+            <dt>Wight (Upiorna)</dt>
+            <dd>Wampir całkowicie opanowany przez <a href="javascript:void(0)" onclick="goToGlossary('gloss-beast')">Bestię</a>. Człowieczeństwo 0. Dziki potwór bez rozumu.</dd>
+        </div>
+    </div>
+</div>
+    <button onclick="scrollToTop()" id="toTopBtn" title="Do góry">⬆️</button>
+</body>
+</html>
